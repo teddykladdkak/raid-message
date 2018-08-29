@@ -2,6 +2,7 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 const makeDir = require('make-dir');
+var prompt = require('prompt');
 
 //Datum funktion.
 function addzero(number){if(number <= 9){return "0" + number;}else{return number;};};
@@ -10,17 +11,45 @@ function getDate(dateannan, timeannan, milisecsave){
 	return {"datum": date.getFullYear() + '-' + addzero(date.getMonth() + 1) + '-' + addzero(date.getDate()), "tid": addzero(date.getHours()) + ':' + addzero(date.getMinutes()), "milisec": date.getTime(), "manad": date.getFullYear() + '-' + addzero(date.getMonth() + 1)};
 };
 
-if (fs.existsSync(__dirname + '/admin.json')) {
-	var admin = JSON.parse(fs.readFileSync(__dirname + '/admin.json', 'utf8'));
-}else{
-	var admin = {"password": "321"};
-	fs.writeFileSync(__dirname + '/admin.json', JSON.stringify(admin, null, ' '));
-};
 var config = {
 	"public": __dirname + '/public',
 	"port": 9999
 };
 
+//Kollar IP adress för server.
+function getIPAddress() {
+	var interfaces = require('os').networkInterfaces();
+	for (var devName in interfaces) {
+		var iface = interfaces[devName];
+		for (var i = 0; i < iface.length; i++) {
+			var alias = iface[i];
+			if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal)
+			return alias.address;
+		};
+	};
+	return '0.0.0.0';
+};
+var ip = getIPAddress();
+console.log('http://localhost:' + config.port);
+console.log('http://' + ip + ':' + config.port);
+
+if (fs.existsSync(__dirname + '/admin.json')) {
+	var admin = JSON.parse(fs.readFileSync(__dirname + '/admin.json', 'utf8'));
+}else{
+	prompt.start();
+	prompt.get(['adminlösenord'], function (err, result) {
+		var admin = {"password": result.adminlösenord};
+		fs.writeFileSync(__dirname + '/admin.json', JSON.stringify(admin, null, ' '));
+		console.log('Lösenord inställt! Kan ändras i "admin.json"');
+	});
+};
+
+if (fs.existsSync(__dirname + '/public/raids.json')) {
+	var dataraids = JSON.parse(fs.readFileSync(__dirname + '/public/raids.json', 'utf8')).raiddata;
+}else{
+	fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": []}, null, ' '));
+	var dataraids = [];
+};
 
 //Startar server och tillåtna filer
 var server = http.createServer(function (request, response) {
@@ -83,7 +112,7 @@ function loadpage(filePath, extname, response, contentType){
 		}
 	});
 };
-var dataraids = [];
+
 // Loading socket.io
 var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket, username) {
@@ -94,15 +123,16 @@ io.sockets.on('connection', function (socket, username) {
 		socket.username = datajson.username;
 		socket.team = datajson.team;
 		console.log('Namn: ' + datajson.username + ', Team: ' + datajson.team);
-		var dataraidsfirst = [];
+		/*var dataraidsfirst = [];
 		for (var i = 0; i < dataraids.length; i++){
 			if(i == 10){
 				i = 9999999999;
 			};
 			dataraidsfirst.push(dataraids[i]);
-		};
+		};*/
 		console.log('Debugg: Alla reggade raider skickas till användaren.');
-		socket.emit('sendinfo', {"userinfo": datajson, "dataraidsfirst": dataraidsfirst});
+		//socket.emit('sendinfo', {"userinfo": datajson, "dataraidsfirst": dataraidsfirst});
+		socket.emit('sendinfo', {"userinfo": datajson});
 	});
 	socket.on('postraid', function (data){
 		data.username = socket.username;
@@ -112,6 +142,7 @@ io.sockets.on('connection', function (socket, username) {
 		data.id = randomString(10);
 		console.log(data);
 		dataraids.push(data);
+		fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
 		socket.emit('nyraid', data);
 		socket.broadcast.emit('nyraid', data);
 	});
@@ -122,6 +153,7 @@ io.sockets.on('connection', function (socket, username) {
 			if(dataraids[i].id == data.id){
 				console.log('Hittade inlägget! Lägger till kommentar.');
 				dataraids[i].kommentar.push(data);
+				fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
 				socket.emit('nykommentar', data);
 				socket.broadcast.emit('nykommentar', data);
 				break;
@@ -133,6 +165,7 @@ io.sockets.on('connection', function (socket, username) {
 			if(dataraids[i].id == id){
 				console.log('Hittade inlägget! Lägger till att användare kommer.');
 				dataraids[i].kommer.push({"username": socket.username, "team": socket.team});
+				fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
 				socket.emit('nykommer', {"id": id, "data": dataraids[i].kommer});
 				socket.broadcast.emit('nykommer', {"id": id, "data": dataraids[i].kommer});
 				break;
@@ -144,6 +177,7 @@ io.sockets.on('connection', function (socket, username) {
 			for (var i = dataraids.length - 1; i >= 0; i--) {
 				if(dataraids[i].id == data.id){
 					dataraids.splice(i, 1);
+					fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
 					socket.emit('remove', data.id);
 					socket.broadcast.emit('remove', data.id);
 					break;
@@ -160,22 +194,4 @@ io.sockets.on('connection', function (socket, username) {
 		socket.pair = '';
 	});
 });
-	
-	
-//Kollar IP adress för server.
-function getIPAddress() {
-	var interfaces = require('os').networkInterfaces();
-	for (var devName in interfaces) {
-		var iface = interfaces[devName];
-		for (var i = 0; i < iface.length; i++) {
-			var alias = iface[i];
-			if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal)
-			return alias.address;
-		};
-	};
-	return '0.0.0.0';
-};
-var ip = getIPAddress();
-console.log('http://localhost:' + config.port);
-console.log('http://' + ip + ':' + config.port);
 server.listen(config.port);

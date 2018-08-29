@@ -137,8 +137,8 @@
 			<p>Föreslagen tid</p>
 			<input type="time" id="raidtid">
 			<p>Kommentar</p>
-			<textarea id="raidkommentar"></textarea><br/>
-			<input type="button" value="Posta!" onclick="postraid();">
+			<textarea id="raidkommentar" onkeydown="checkkey(event, this, 'postbutton');"></textarea><br/>
+			<input type="button" value="Posta!" onclick="postraid();" class="postbutton">
 		</div>
 		<div id="posts">
 			
@@ -159,13 +159,20 @@
 		var reader = new FileReader();
 			reader.readAsDataURL(file);
 			reader.onload = function () {
-				console.log(reader.result)
 				document.getElementById('raidimagetext').value = reader.result;
 				document.getElementById('raidimagepreview').src = reader.result;
+				document.getElementById('raidtid').focus();
 			};
 			reader.onerror = function (error) {
 				console.log('Error: ', error);
 			};
+	};
+	function checkkey(e, element, classname){
+		if (event.which == 13 || event.keyCode == 13) {
+			element.parentElement.getElementsByClassName(classname)[0].click();
+			event.preventDefault();
+			e.preventDefault();
+		};
 	};
 	//Datum funktion.
 	function addzero(number){if(number <= 9){return "0" + number;}else{return number;};};
@@ -215,7 +222,25 @@
 			console.log('Debugg: Användardata finns redan, skickas till server.');
 			socket.emit('login', localStorage.getItem('userdata'));
 		};
+		getraids();
 	};
+	function getraids(){
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function() {
+		    if (this.readyState == 4 && this.status == 200) {
+		        var data = JSON.parse(this.responseText);
+		        console.log(data.raiddata);
+		        if(!data.raiddata){}else{
+					for (var i = data.raiddata.length - 1; i >= 0; i--) {
+						console.log(data.raiddata[i]);
+						addpost(data.raiddata[i].username, data.raiddata[i].team, data.raiddata[i].raidtid, data.raiddata[i].raidkommentar, data.raiddata[i].raidimage, data.raiddata[i].kommer, data.raiddata[i].kommentar, data.raiddata[i].id, 'false');
+					};
+				};
+		    }
+		};
+		xmlhttp.open("GET", "raids.json", true);
+		xmlhttp.send();
+	}
 	function login(){
 		document.getElementById('registrera').setAttribute('style', 'display: none;');
 		var username = document.getElementById('username').value;
@@ -237,13 +262,13 @@
 		var userwrapper = document.getElementById('anvandarnamn');
 			userwrapper.appendChild(document.createTextNode(data.userinfo.username));
 		document.getElementById('meny').setAttribute('class', data.userinfo.team);
-		console.log(data.dataraidsfirst);
+		/*console.log(data.dataraidsfirst);
 		if(!data.dataraidsfirst){}else{
 			for (var i = data.dataraidsfirst.length - 1; i >= 0; i--) {
 				console.log(data.dataraidsfirst[i]);
 				addpost(data.dataraidsfirst[i].username, data.dataraidsfirst[i].team, data.dataraidsfirst[i].raidtid, data.dataraidsfirst[i].raidkommentar, data.dataraidsfirst[i].raidimage, data.dataraidsfirst[i].kommer, data.dataraidsfirst[i].kommentar, data.dataraidsfirst[i].id, 'false');
 			};
-		};
+		};*/
 	});
 	socket.on('nyraid', function (data) {
 		addpost(data.username, data.team, data.raidtid, data.raidkommentar, data.raidimage, data.kommer, data.kommentar, data.id, 'true');
@@ -310,12 +335,14 @@
 					kommentarwrapper.setAttribute('style', 'display: none;');
 					var kommenttextarea = document.createElement('textarea');
 						kommenttextarea.setAttribute('class', 'kommentartextarea');
+						kommenttextarea.setAttribute('onkeydown', 'checkkey(event, this, "kommentsend");');
 					kommentarwrapper.appendChild(kommenttextarea);
 					var kommentarbr = document.createElement('br');
 					kommentarwrapper.appendChild(kommentarbr);
 					var kommentsend = document.createElement('input');
 						kommentsend.setAttribute('type', 'button');
 						kommentsend.setAttribute('value', 'Skicka/Send');
+						kommentsend.setAttribute('class', 'kommentsend');
 						kommentsend.setAttribute('onclick', 'skickakommentar("' + id + '")');
 					kommentarwrapper.appendChild(kommentsend);
 				body.appendChild(kommentarwrapper);
@@ -341,6 +368,7 @@
 			wrapper.setAttribute('style', 'display: none;');
 		}else{
 			wrapper.removeAttribute('style');
+			wrapper.getElementsByClassName('kommentartextarea')[0].focus();
 		};
 	};
 	socket.on('nykommentar', function (data) {
@@ -380,9 +408,9 @@
 		var wrapper = document.getElementById(id);
 			wrapper.parentElement.removeChild(wrapper);
 	});
-	/*socket.on('disconnect', function () {
+	socket.on('disconnect', function () {
 		location.reload();
-	});*/
+	});
 </script>
 </body>
 </html>
