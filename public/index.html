@@ -131,7 +131,7 @@
 		</div>
 		<div id="addraid" style="display: none;">
 			<p>Skärmdump</p>
-			<input type="file" id="raidimage" onchange="getBase64(this.files[0]);"><br/>
+			<input type="file" id="raidimage" onchange="makesmallimg(this.files[0]);"><br/>
 			<textarea id="raidimagetext" style="display: none;"></textarea><br/>
 			<img src="img/ingenbild.png" id="raidimagepreview"><br/>
 			<p>Föreslagen tid</p>
@@ -145,6 +145,7 @@
 		</div>
 	</div>
 <script src="socket.io/socket.io.js"></script>
+<script src="script/megapix-image.js"></script>
 <script type="text/javascript">
 	function removechilds(parent){
 		if(parent.hasChildNodes()){
@@ -153,19 +154,12 @@
 			};
 		};
 	};
-	function getBase64(file) {
+	function makesmallimg(file){
 		document.getElementById('raidimagepreview').src = 'img/laddar.png';
-		console.log('Laddar');
-		var reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onload = function () {
-				document.getElementById('raidimagetext').value = reader.result;
-				document.getElementById('raidimagepreview').src = reader.result;
-				document.getElementById('raidtid').focus();
-			};
-			reader.onerror = function (error) {
-				console.log('Error: ', error);
-			};
+	    var mpImg = new MegaPixImage(file);
+	    var resImg = document.getElementById('raidimagepreview');
+	    mpImg.render(resImg, { maxWidth: 300, maxHeight: 535, quality: 0.5 });
+	    document.getElementById('raidtid').focus();
 	};
 	function checkkey(e, element, classname){
 		if (event.which == 13 || event.keyCode == 13) {
@@ -197,7 +191,7 @@
 		document.getElementById('addraid').setAttribute('style', 'display: none;');
 	};
 	function postraid(){
-		socket.emit('postraid', {raidimage: document.getElementById('raidimagetext').value, raidtid: document.getElementById('raidtid').value, raidkommentar: document.getElementById('raidkommentar').value});
+		socket.emit('postraid', {raidimage: document.getElementById('raidimagepreview').src, raidtid: document.getElementById('raidtid').value, raidkommentar: document.getElementById('raidkommentar').value});
 		hideaddreaid(document.getElementById('buttonlaggtillraid'));
 	};
 	function changeuser(){
