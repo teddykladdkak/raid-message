@@ -212,6 +212,7 @@
 		if(!localStorage.getItem('userdata')){
 			document.getElementById('registrera').removeAttribute('style');
 		}else{
+			console.log('Debugg: Användardata finns redan, skickas till server.');
 			socket.emit('login', localStorage.getItem('userdata'));
 		};
 	};
@@ -231,6 +232,7 @@
 		socket.emit('login', '{"username": "' + username + '", "team": "' + team + '"}');
 	};
 	socket.on('sendinfo', function (data) {
+		console.log('Debugg: Data mottages från server.');
 		document.getElementById('wrapper').removeAttribute('style');
 		var userwrapper = document.getElementById('anvandarnamn');
 			userwrapper.appendChild(document.createTextNode(data.userinfo.username));

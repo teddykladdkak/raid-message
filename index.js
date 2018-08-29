@@ -89,6 +89,7 @@ var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket, username) {
 	// socket.emit('err', 'Användare kunde inte hittas.');
 	socket.on('login', function (data){
+		console.log('Debugg: Användare börjar logga in.');
 		var datajson = JSON.parse(data);
 		socket.username = datajson.username;
 		socket.team = datajson.team;
@@ -100,6 +101,7 @@ io.sockets.on('connection', function (socket, username) {
 			};
 			dataraidsfirst.push(dataraids[i]);
 		};
+		console.log('Debugg: Alla reggade raider skickas till användaren.');
 		socket.emit('sendinfo', {"userinfo": datajson, "dataraidsfirst": dataraidsfirst});
 	});
 	socket.on('postraid', function (data){
