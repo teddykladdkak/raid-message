@@ -24,6 +24,13 @@
 	<link rel="apple-touch-icon-precomposed" sizes="120x120" href="ico/icon120x120.png">
 	<link rel="apple-touch-icon-precomposed" sizes="152x152" href="ico/icon152x152.png">
 	<style type="text/css">
+		body, html {
+			margin: 0px;
+			padding: 0px;
+		}
+		input, select, textarea {
+			box-sizing : border-box;
+		}
 		#registrera table, #teamwrapper {
 			width: 100%;
 			max-width: 400px;
@@ -33,6 +40,9 @@
 		}
 		#teamwrapper .chosenteam {
 			border: solid 2px black;
+		}
+		#meny {
+			padding: 5px;
 		}
 		.unknown {
 			background-color: black;
@@ -58,7 +68,7 @@
 			max-width: 300px;
 			width: 100%;
 		}
-		.postbody {
+		.postbody, #addraid {
 			max-width: 300px;
 			margin: 20px auto;
 			padding: 5px;
@@ -122,8 +132,8 @@
 		<div id="addraid" style="display: none;">
 			<p>Skärmdump</p>
 			<input type="file" id="raidimage" onchange="getBase64(this.files[0]);"><br/>
-			<textarea id="raidimagetext"></textarea><br/>
-			<img src="" id="raidimagepreview"><br/>
+			<textarea id="raidimagetext" style="display: none;"></textarea><br/>
+			<img src="img/ingenbild.png" id="raidimagepreview"><br/>
 			<p>Föreslagen tid</p>
 			<input type="time" id="raidtid">
 			<p>Kommentar</p>
@@ -136,7 +146,15 @@
 	</div>
 <script src="socket.io/socket.io.js"></script>
 <script type="text/javascript">
+	function removechilds(parent){
+		if(parent.hasChildNodes()){
+			while (parent.hasChildNodes()) {
+				parent.removeChild(parent.firstChild);
+			};
+		};
+	};
 	function getBase64(file) {
+		document.getElementById('raidimagepreview').src = 'img/laddar.png';
 		console.log('Laddar');
 		var reader = new FileReader();
 			reader.readAsDataURL(file);
@@ -149,7 +167,14 @@
 				console.log('Error: ', error);
 			};
 	};
+	//Datum funktion.
+	function addzero(number){if(number <= 9){return "0" + number;}else{return number;};};
+	function getDate(dateannan, timeannan, milisecsave){
+		if(!dateannan && !timeannan && !milisecsave){var date = new Date();}else if(!milisecsave){var annatdatum = dateannan.split('-');var annattid = timeannan.split(':');var date = new Date(annatdatum[0], annatdatum[1] - 1, annatdatum[2], annattid[0], annattid[1]);}else{var date = new Date(parseInt(milisecsave));};
+		return {"datum": date.getFullYear() + '-' + addzero(date.getMonth() + 1) + '-' + addzero(date.getDate()), "tid": addzero(date.getHours()) + ':' + addzero(date.getMinutes()), "milisec": date.getTime(), "manad": date.getFullYear() + '-' + addzero(date.getMonth() + 1)};
+	};
 	function addraid(element){
+		document.getElementById('raidtid').value = getDate().tid;
 		element.value = 'Avbryt';
 		element.setAttribute('onclick', 'hideaddreaid(this);');
 		document.getElementById('addraid').removeAttribute('style');
@@ -157,7 +182,7 @@
 	function hideaddreaid(element){
 		document.getElementById('raidimage').value = '';
 		document.getElementById('raidimagetext').value = '';
-		document.getElementById('raidimagepreview').src = '';
+		document.getElementById('raidimagepreview').src = 'img/ingenbild.png';
 		document.getElementById('raidtid').value = '';
 		document.getElementById('raidkommentar').value = '';
 		element.value = 'Lägg till raid';
@@ -214,17 +239,19 @@
 		if(!data.dataraidsfirst){}else{
 			for (var i = data.dataraidsfirst.length - 1; i >= 0; i--) {
 				console.log(data.dataraidsfirst[i]);
-				addpost(data.dataraidsfirst[i].username, data.dataraidsfirst[i].team, data.dataraidsfirst[i].raidtid, data.dataraidsfirst[i].raidkommentar, data.dataraidsfirst[i].raidimage, data.dataraidsfirst[i].kommer, data.dataraidsfirst[i].kommentarer, 'false');
+				addpost(data.dataraidsfirst[i].username, data.dataraidsfirst[i].team, data.dataraidsfirst[i].raidtid, data.dataraidsfirst[i].raidkommentar, data.dataraidsfirst[i].raidimage, data.dataraidsfirst[i].kommer, data.dataraidsfirst[i].kommentar, data.dataraidsfirst[i].id, 'false');
 			};
 		};
 	});
 	socket.on('nyraid', function (data) {
-		addpost(data.username, data.team, data.raidtid, data.raidkommentar, data.raidimage, data.kommer, data.kommentarer, 'true');
+		addpost(data.username, data.team, data.raidtid, data.raidkommentar, data.raidimage, data.kommer, data.kommentar, data.id, 'true');
 	});
-	function addpost(username, team, raidtid, raidkommentar, raidimage, kommernummer, kommentarer, firstorlast){
+	function addpost(username, team, raidtid, raidkommentar, raidimage, kommernummer, kommentarer, id, firstorlast){
+		console.log(kommentarer);
 		var wrapper = document.getElementById('posts');
 			var body = document.createElement('span');
 				body.setAttribute('class', 'postbody');
+				body.setAttribute('id', id);
 				var user = document.createElement('table');
 					user.setAttribute('class', team + ' tablewidth');
 					var usertr = document.createElement('tr');
@@ -237,6 +264,7 @@
 							var tabort = document.createElement('input');
 								tabort.setAttribute('type', 'button');
 								tabort.setAttribute('value', 'X');
+								tabort.setAttribute('onclick', 'remove("' + id + '");');
 							taborttd.appendChild(tabort);
 						usertr.appendChild(taborttd);
 					user.appendChild(usertr);
@@ -255,13 +283,17 @@
 						var kommertd = document.createElement('td');
 							var kommer = document.createElement('input');
 								kommer.setAttribute('type', 'button');
-								kommer.setAttribute('value', 'Kommer! (' + kommernummer + ')');
+								kommer.setAttribute('value', 'Kommer! (' + kommernummer.length + ')');
+								kommer.setAttribute('onclick', 'kommer("' + id + '");');
+								kommer.setAttribute('class', 'kommerbutton');
 							kommertd.appendChild(kommer);
 						tabletr.appendChild(kommertd);
 						var kommentartd = document.createElement('td');
 							kommentartd.setAttribute('class', 'right');
 							var kommentar = document.createElement('input');
 								kommentar.setAttribute('type', 'button');
+								kommentar.setAttribute('class', 'kommentarbutton');
+								kommentar.setAttribute('onclick', 'hideshowkomment("' + id + '");');
 								if(!kommentarer){
 									kommentar.setAttribute('value', 'Kommentar (0)');
 								}else{
@@ -271,12 +303,81 @@
 						tabletr.appendChild(kommentartd);
 					tableextra.appendChild(tabletr);
 				body.appendChild(tableextra);
+				var kommentarwrapper = document.createElement('div');
+					kommentarwrapper.setAttribute('class', 'kommentarwrapper');
+					kommentarwrapper.setAttribute('style', 'display: none;');
+					var kommenttextarea = document.createElement('textarea');
+						kommenttextarea.setAttribute('class', 'kommentartextarea');
+					kommentarwrapper.appendChild(kommenttextarea);
+					var kommentarbr = document.createElement('br');
+					kommentarwrapper.appendChild(kommentarbr);
+					var kommentsend = document.createElement('input');
+						kommentsend.setAttribute('type', 'button');
+						kommentsend.setAttribute('value', 'Skicka/Send');
+						kommentsend.setAttribute('onclick', 'skickakommentar("' + id + '")');
+					kommentarwrapper.appendChild(kommentsend);
+				body.appendChild(kommentarwrapper);
 		if(firstorlast == 'true'){
 			wrapper.insertBefore(body, wrapper.childNodes[0]); 
 		}else{
 			wrapper.appendChild(body);
 		};
+		if(!kommentarer){}else{
+			for (var i = 0; i < kommentarer.length; i++){
+				addkomment(kommentarer[i])
+			};
+		};
 	};
+	function skickakommentar(id){
+		var text = document.getElementById(id).getElementsByTagName('textarea')[0];
+		socket.emit('addkomment', {"id": id, "kommentar": text.value});
+		text.value = '';
+	};
+	function hideshowkomment(id){
+		var wrapper = document.getElementById(id).getElementsByClassName('kommentarwrapper')[0];
+		if(!wrapper.getAttribute('style')){
+			wrapper.setAttribute('style', 'display: none;');
+		}else{
+			wrapper.removeAttribute('style');
+		};
+	};
+	socket.on('nykommentar', function (data) {
+		console.log(data);
+		var button = document.getElementById(data.id).getElementsByClassName('kommentarbutton')[0];
+			var num = parseInt(button.value.split('(')[1].split(')')[0]) + 1;
+			button.setAttribute('value', 'Kommentar (' + num + ')');
+		addkomment(data);
+	});
+	function addkomment(data){
+		var wrapper = document.getElementById(data.id)
+			var kommentwrapper = wrapper.getElementsByClassName('kommentarwrapper')[0];
+				var p = document.createElement('p');
+					var user = document.createElement('span');
+						user.setAttribute('class', data.team);
+						var usertext = document.createTextNode(data.username + ': ');
+						user.appendChild(usertext);
+					p.appendChild(user);
+					var ptext = document.createTextNode(data.kommentar);
+					p.appendChild(ptext);
+				//kommentwrapper.appendChild(p);
+				kommentwrapper.insertBefore(p, kommentwrapper.childNodes[0]); 
+	};
+	function kommer(id){
+		socket.emit('addkommer', id);
+	};
+	socket.on('nykommer', function (data) {
+		document.getElementById(data.id).getElementsByClassName('kommerbutton')[0].setAttribute('value', 'Kommer! (' + data.data.length + ')');
+	});
+	function remove(id){
+		var losen = prompt("Admin säg det hemliga ordet!", "");
+		if (losen == null || losen == ""){}else{
+			socket.emit('remove', {"id": id, "losen": losen});
+		};
+	};
+	socket.on('remove', function (id) {
+		var wrapper = document.getElementById(id);
+			wrapper.parentElement.removeChild(wrapper);
+	});
 	socket.on('disconnect', function () {
 		location.reload();
 	});

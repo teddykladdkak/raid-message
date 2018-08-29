@@ -10,7 +10,12 @@ function getDate(dateannan, timeannan, milisecsave){
 	return {"datum": date.getFullYear() + '-' + addzero(date.getMonth() + 1) + '-' + addzero(date.getDate()), "tid": addzero(date.getHours()) + ':' + addzero(date.getMinutes()), "milisec": date.getTime(), "manad": date.getFullYear() + '-' + addzero(date.getMonth() + 1)};
 };
 
-
+if (fs.existsSync(__dirname + '/admin.json')) {
+	var admin = JSON.parse(fs.readFileSync(__dirname + '/admin.json', 'utf8'));
+}else{
+	var admin = {"password": "321"};
+	fs.writeFileSync(__dirname + '/admin.json', JSON.stringify(admin, null, ' '));
+};
 var config = {
 	"public": __dirname + '/public',
 	"port": 7777
@@ -49,7 +54,14 @@ var server = http.createServer(function (request, response) {
 	};
 	loadpage(filePath, extname, response, contentType);
 });
-
+function randomString(length){
+	var text = "";
+	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	for(var i = 0; i < length; i++) {
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+	};
+	return text;
+};
 function loadpage(filePath, extname, response, contentType){
 	fs.readFile(config.public + '/' + filePath, function(error, content) {
 		if (error) {
@@ -93,12 +105,49 @@ io.sockets.on('connection', function (socket, username) {
 	socket.on('postraid', function (data){
 		data.username = socket.username;
 		data.team = socket.team;
-		data.kommer = 1;
+		data.kommer = [{"username": socket.username, "team": socket.team}];
 		data.kommentar = [];
+		data.id = randomString(10);
 		console.log(data);
 		dataraids.push(data);
 		socket.emit('nyraid', data);
 		socket.broadcast.emit('nyraid', data);
+	});
+	socket.on('addkomment', function (data){
+		data.username = socket.username;
+		data.team = socket.team;
+		for (var i = dataraids.length - 1; i >= 0; i--) {
+			if(dataraids[i].id == data.id){
+				console.log('Hittade inlägget! Lägger till kommentar.');
+				dataraids[i].kommentar.push(data);
+				socket.emit('nykommentar', data);
+				socket.broadcast.emit('nykommentar', data);
+				break;
+			};
+		};
+	});
+	socket.on('addkommer', function (id){
+		for (var i = dataraids.length - 1; i >= 0; i--) {
+			if(dataraids[i].id == id){
+				console.log('Hittade inlägget! Lägger till att användare kommer.');
+				dataraids[i].kommer.push({"username": socket.username, "team": socket.team});
+				socket.emit('nykommer', {"id": id, "data": dataraids[i].kommer});
+				socket.broadcast.emit('nykommer', {"id": id, "data": dataraids[i].kommer});
+				break;
+			};
+		};
+	});
+	socket.on('remove', function (data){
+		if(admin.password == data.losen){
+			for (var i = dataraids.length - 1; i >= 0; i--) {
+				if(dataraids[i].id == data.id){
+					dataraids.splice(i, 1);
+					socket.emit('remove', data.id);
+					socket.broadcast.emit('remove', data.id);
+					break;
+				};
+			};
+		};
 	});
 	socket.on('disconnect', function (){
 		var connected = io.sockets.sockets[socket.pair];
