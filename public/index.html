@@ -10,11 +10,11 @@
 	<meta content="minimum-scale=1.0, width=device-width, maximum-scale=0.6667, user-scalable=no" name="viewport" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
-	<!-- <meta property="og:title" content="Patient Dagbok (PatDB)" />
-	<meta property="og:url" content="https://www.patdagbok.tk" />
+	<meta property="og:title" content="Raid Messenger" />
+	<meta property="og:url" content="https://www.raidlund.tk" />
 	<meta property="og:type" content="website" />
-	<meta property="og:description" content="Applikation som hjälper dig som patient att föra dagbok under din sjukdomsperiod, verkar även som en informationsbrygga mellan dig och vårdpersonalen."/>
-	<meta property="og:image" content="ico/icon.jpg" /> -->
+	<meta property="og:description" content="Applikation som ämnar ersätta Facebook, Messenger, Discord m.m. i jakten på Raids!"/>
+	<meta property="og:image" content="ico/icon.jpg" />
 
 	<link rel="shortcut icon" href="ico/icon.ico" />
 	<link rel="icon" type="image/vnd.microsoft.icon" href="ico/icon.ico" />
@@ -85,7 +85,7 @@
 		.right {
 			text-align: right;
 		}
-		.center {
+		.center, #nopost {
 			text-align: center;
 		}
 	</style>
@@ -218,13 +218,23 @@
 		};
 		getraids();
 	};
+	function addnopost(){
+		var wrapper = document.getElementById('posts');
+    		var noposts = document.createElement('p');
+    			noposts.setAttribute('id', 'nopost');
+    			var nopoststext = document.createTextNode('Inga raider reggade ännu idag.. Blir du den första?');
+    			noposts.appendChild(nopoststext);
+    		wrapper.appendChild(noposts);
+	};
 	function getraids(){
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
 		    if (this.readyState == 4 && this.status == 200) {
 		        var data = JSON.parse(this.responseText);
 		        console.log(data.raiddata);
-		        if(!data.raiddata){}else{
+		        if(!data.raiddata){}else if(data.raiddata.length == 0){
+		        	addnopost();
+		        }else{
 					for (var i = data.raiddata.length - 1; i >= 0; i--) {
 						console.log(data.raiddata[i]);
 						addpost(data.raiddata[i].username, data.raiddata[i].team, data.raiddata[i].raidtid, data.raiddata[i].raidkommentar, data.raiddata[i].raidimage, data.raiddata[i].kommer, data.raiddata[i].kommentar, data.raiddata[i].id, 'false');
@@ -256,15 +266,12 @@
 		var userwrapper = document.getElementById('anvandarnamn');
 			userwrapper.appendChild(document.createTextNode(data.userinfo.username));
 		document.getElementById('meny').setAttribute('class', data.userinfo.team);
-		/*console.log(data.dataraidsfirst);
-		if(!data.dataraidsfirst){}else{
-			for (var i = data.dataraidsfirst.length - 1; i >= 0; i--) {
-				console.log(data.dataraidsfirst[i]);
-				addpost(data.dataraidsfirst[i].username, data.dataraidsfirst[i].team, data.dataraidsfirst[i].raidtid, data.dataraidsfirst[i].raidkommentar, data.dataraidsfirst[i].raidimage, data.dataraidsfirst[i].kommer, data.dataraidsfirst[i].kommentar, data.dataraidsfirst[i].id, 'false');
-			};
-		};*/
 	});
 	socket.on('nyraid', function (data) {
+		var wrapper = document.getElementById('nopost');
+		if(!wrapper){}else{
+			wrapper.parentElement.removeChild(wrapper);
+		};
 		addpost(data.username, data.team, data.raidtid, data.raidkommentar, data.raidimage, data.kommer, data.kommentar, data.id, 'true');
 	});
 	function addpost(username, team, raidtid, raidkommentar, raidimage, kommernummer, kommentarer, id, firstorlast){
@@ -383,8 +390,8 @@
 					p.appendChild(user);
 					var ptext = document.createTextNode(data.kommentar);
 					p.appendChild(ptext);
-				//kommentwrapper.appendChild(p);
-				kommentwrapper.insertBefore(p, kommentwrapper.childNodes[0]); 
+				kommentwrapper.appendChild(p);
+				//kommentwrapper.insertBefore(p, kommentwrapper.childNodes[0]); 
 	};
 	function kommer(id){
 		socket.emit('addkommer', id);
@@ -401,6 +408,9 @@
 	socket.on('remove', function (id) {
 		var wrapper = document.getElementById(id);
 			wrapper.parentElement.removeChild(wrapper);
+		if(document.getElementsByClassName('postbody').length == 0){
+			addnopost();
+		};
 	});
 	socket.on('disconnect', function () {
 		location.reload();

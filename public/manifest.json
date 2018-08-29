@@ -1,8 +1,8 @@
 {
   "name": "Raid Messenger",
   "short_name": "RaidMess",
-  "background_color": "#000000",
-  "description": "",
+  "background_color": "#FFFFFF",
+  "description": "Applikation som ämnar ersätta Facebook, Messenger, Discord m.m. i jakten på Raids!",
   "icons": [
     {
       "src": "ico/patient/icon36x36.png",
@@ -44,5 +44,5 @@
   "start_url": "index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#0000ff"
+  "theme_color": "#000000"
 }
