@@ -18,7 +18,7 @@ if (fs.existsSync(__dirname + '/admin.json')) {
 };
 var config = {
 	"public": __dirname + '/public',
-	"port": 7777
+	"port": 9999
 };
 
 

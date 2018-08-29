@@ -1,8 +1,8 @@
 {
-  "name": "Patient Dagbok",
-  "short_name": "PatDB",
+  "name": "Raid Messenger",
+  "short_name": "RaidMess",
   "background_color": "#000000",
-  "description": "Applikation som hjälper dig som patient att föra dagbok under din sjukdomsperiod, verkar även som en informationsbrygga mellan dig och vårdpersonalen.",
+  "description": "",
   "icons": [
     {
       "src": "ico/patient/icon36x36.png",
