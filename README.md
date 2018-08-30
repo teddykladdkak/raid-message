@@ -5,6 +5,13 @@ This project aims to replace Facebook, Messenger, Discord, etc. in the pursuit o
 ## Config
 At the moment, it is very fine-tuned to work in the Lund area, but not a lot of configuration is required to enable you to start your own server for your city.
 
+## Good to know at the start
+When the server is started for the first time, you will be given the option to enter the password for the admins in the console. The password is then saved in root "/admin.json".
+
+All raids are saved in the file "public/raids.js", this file is created automatically when the server is started the first time.
+
+Specific IP port is change in variable "config" in "/index.js".
+
 ## Todo
 * Clean "raids.json" at the days end.
 * Allows users to see who said they are coming.
