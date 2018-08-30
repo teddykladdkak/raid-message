@@ -15,8 +15,11 @@ Specific IP port is change in variable "config" in "/index.js".
 ## Todo
 * Clean "raids.json" at the days end.
 * Allows users to see who said they are coming.
-* Script for image to text (Check area of gym and if its ex-raid).
 * Push notifications (probably only android and computer due to iOS do not support this at this time).
+* Test and debug image to text.
+* Load all files from server.. (After debug)
+* Add ex-raid icon.
+* Make setting for users to only show gyms in a specific area.
 * 29/8 ~~Give the user information if no raids are posted (instead of a blank page).~~
 * 29/8 ~~Change order of comments.~~
 * 30/8 ~~Menu always visible~~
@@ -25,3 +28,5 @@ Specific IP port is change in variable "config" in "/index.js".
 * 30/8 ~~Users should be able to delete their own posts.~~
 * 30/8 ~~Ability to edit post and time.~~
 * 30/8 ~~Support for different languages. (Fixed with icons)~~
+* 31/8 ~~Script for image to text (Check area of gym and if its ex-raid).~~
+* 31/8 ~~Loading icon when image is processed and analyzed.~~

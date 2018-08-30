@@ -129,6 +129,7 @@ io.sockets.on('connection', function (socket, username) {
 		data.kommer = [{"username": socket.username, "team": socket.team}];
 		data.kommentar = [];
 		data.id = randomString(10);
+		data.exraid = data.exraid;
 		dataraids.push(data);
 		fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
 		socket.emit('nyraid', data);
