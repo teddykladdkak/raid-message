@@ -24,12 +24,22 @@
 	<link rel="apple-touch-icon-precomposed" sizes="120x120" href="ico/icon120x120.png">
 	<link rel="apple-touch-icon-precomposed" sizes="152x152" href="ico/icon152x152.png">
 	<style type="text/css">
-		body, html {
+		body, html, table, tr, td {
 			margin: 0px;
 			padding: 0px;
 		}
 		input, select, textarea {
 			box-sizing : border-box;
+		}
+		input, select, textarea, p, span {
+			font-size: 20px;
+		}
+		input[type=button] {
+			min-height: 35px;
+			margin: 5px;
+		}
+		textarea {
+			width: 100%;
 		}
 		#registrera table, #teamwrapper {
 			width: 100%;
@@ -45,18 +55,30 @@
 			padding: 5px;
 		}
 		.unknown {
+			color: black;
+		}
+		.instinct {
+			color: #b9b900;
+		}
+		.mystic {
+			color: blue;
+		}
+		.valor {
+			color: red;
+		}
+		.unknownbg {
 			background-color: black;
 			color: white;
 		}
-		.instinct {
+		.instinctbg {
 			background-color: yellow;
 			color: black;
 		}
-		.mystic {
+		.mysticbg {
 			background-color: blue;
 			color: white;
 		}
-		.valor {
+		.valorbg {
 			background-color: red;
 			color: black;
 		}
@@ -68,18 +90,18 @@
 			max-width: 300px;
 			width: 100%;
 		}
-		.postbody, #addraid {
-			max-width: 300px;
+		.postbody, #addraid, #registrera {
+			max-width: 400px;
 			margin: 20px auto;
 			padding: 5px;
 			display: block;
 			border: solid 1px black;
 		}
-		.postbody span, .postbody p {
+		.postbody p {
 			margin: 5px;
 			padding: 5px;
 		}
-		.tablewidth, .tablewidth tr {
+		.tablewidth, .tablewidth tr, td.head {
 			width: 100%;
 		}
 		.right {
@@ -87,6 +109,17 @@
 		}
 		.center, #nopost {
 			text-align: center;
+		}
+		#meny {
+			position: fixed;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			max-width: 100%;
+			height: 40px;
+		}
+		#wrapper {
+			padding-top: 40px;
 		}
 	</style>
 </head>
@@ -120,7 +153,7 @@
 					<td>
 						<input type="button" value="Byt användare" onclick="changeuser();">
 					</td>
-					<td class="center">
+					<td class="center head">
 						<span id="anvandarnamn"></span>
 					</td>
 					<td class="right">
@@ -132,12 +165,11 @@
 		<div id="addraid" style="display: none;">
 			<p>Skärmdump</p>
 			<input type="file" id="raidimage" onchange="makesmallimg(this.files[0]);"><br/>
-			<textarea id="raidimagetext" style="display: none;"></textarea><br/>
-			<img src="img/ingenbild.png" id="raidimagepreview"><br/>
+			<div class="center"><img src="img/ingenbild.png" id="raidimagepreview"></div>
 			<p>Föreslagen tid</p>
 			<input type="time" id="raidtid">
 			<p>Kommentar</p>
-			<textarea id="raidkommentar" onkeydown="checkkey(event, this, 'postbutton');"></textarea><br/>
+			<textarea id="raidkommentar" onkeydown="checkkey(event, this, 'postbutton', 'click');"></textarea><br/>
 			<input type="button" value="Posta!" onclick="postraid();" class="postbutton">
 		</div>
 		<div id="posts">
@@ -161,11 +193,17 @@
 	    mpImg.render(resImg, { maxWidth: 300, maxHeight: 535, quality: 0.5 });
 	    document.getElementById('raidtid').focus();
 	};
-	function checkkey(e, element, classname){
+	function checkkey(e, element, classname, todo){
 		if (event.which == 13 || event.keyCode == 13) {
-			element.parentElement.getElementsByClassName(classname)[0].click();
-			event.preventDefault();
-			e.preventDefault();
+			if(todo == 'click'){
+				element.parentElement.getElementsByClassName(classname)[0].click();
+				event.preventDefault();
+				e.preventDefault();
+			}else if(todo == 'edit'){
+				element.blur();
+				event.preventDefault();
+				e.preventDefault();
+			};
 		};
 	};
 	//Datum funktion.
@@ -182,7 +220,6 @@
 	};
 	function hideaddreaid(element){
 		document.getElementById('raidimage').value = '';
-		document.getElementById('raidimagetext').value = '';
 		document.getElementById('raidimagepreview').src = 'img/ingenbild.png';
 		document.getElementById('raidtid').value = '';
 		document.getElementById('raidkommentar').value = '';
@@ -265,7 +302,7 @@
 		document.getElementById('wrapper').removeAttribute('style');
 		var userwrapper = document.getElementById('anvandarnamn');
 			userwrapper.appendChild(document.createTextNode(data.userinfo.username));
-		document.getElementById('meny').setAttribute('class', data.userinfo.team);
+		document.getElementById('meny').setAttribute('class', data.userinfo.team + 'bg');
 	});
 	socket.on('nyraid', function (data) {
 		var wrapper = document.getElementById('nopost');
@@ -281,30 +318,37 @@
 				body.setAttribute('class', 'postbody');
 				body.setAttribute('id', id);
 				var user = document.createElement('table');
-					user.setAttribute('class', team + ' tablewidth');
+					user.setAttribute('class', team + 'bg tablewidth');
 					var usertr = document.createElement('tr');
 						var usertd = document.createElement('td');
-							var username = document.createTextNode(username);
-							usertd.appendChild(username);
+							var userp = document.createElement('p');
+								var usernametext = document.createTextNode(username);
+								userp.appendChild(usernametext);
+							usertd.appendChild(userp);
 						usertr.appendChild(usertd);
 						var taborttd = document.createElement('td');
 							taborttd.setAttribute('class', 'right');
 							var tabort = document.createElement('input');
 								tabort.setAttribute('type', 'button');
 								tabort.setAttribute('value', 'X');
-								tabort.setAttribute('onclick', 'remove("' + id + '");');
+								tabort.setAttribute('onclick', 'remove("' + id + '", "' + username + '", "' + team + '");');
 							taborttd.appendChild(tabort);
 						usertr.appendChild(taborttd);
 					user.appendChild(usertr);
 				body.appendChild(user);
 				var kommentar = document.createElement('p');
+					kommentar.setAttribute('onclick', 'edit("' + id + '", "' + username + '", "' + team + '", this);');
+					kommentar.setAttribute('class', 'posttext');
 					var kommentartext = document.createTextNode(raidtid + ' ' + raidkommentar)
 					kommentar.appendChild(kommentartext);
 				body.appendChild(kommentar);
-				var img = document.createElement('img');
-					img.setAttribute('src', raidimage);
-					img.setAttribute('class', 'raidimage');
-				body.appendChild(img);
+				var imgwrapp = document.createElement('div');
+					imgwrapp.setAttribute('class', 'center');
+					var img = document.createElement('img');
+						img.setAttribute('src', raidimage);
+						img.setAttribute('class', 'raidimage');
+					imgwrapp.appendChild(img);
+				body.appendChild(imgwrapp);
 				var tableextra = document.createElement('table');
 					tableextra.setAttribute('class', 'tablewidth');
 					var tabletr = document.createElement('tr');
@@ -334,9 +378,12 @@
 				var kommentarwrapper = document.createElement('div');
 					kommentarwrapper.setAttribute('class', 'kommentarwrapper');
 					kommentarwrapper.setAttribute('style', 'display: none;');
+					var kommentholder = document.createElement('span');
+						kommentholder.setAttribute('class', 'kommentholder');
+					kommentarwrapper.appendChild(kommentholder);
 					var kommenttextarea = document.createElement('textarea');
 						kommenttextarea.setAttribute('class', 'kommentartextarea');
-						kommenttextarea.setAttribute('onkeydown', 'checkkey(event, this, "kommentsend");');
+						kommenttextarea.setAttribute('onkeydown', 'checkkey(event, this, "kommentsend", "click");');
 					kommentarwrapper.appendChild(kommenttextarea);
 					var kommentarbr = document.createElement('br');
 					kommentarwrapper.appendChild(kommentarbr);
@@ -381,17 +428,16 @@
 	});
 	function addkomment(data){
 		var wrapper = document.getElementById(data.id)
-			var kommentwrapper = wrapper.getElementsByClassName('kommentarwrapper')[0];
+			var kommentwrapper = wrapper.getElementsByClassName('kommentholder')[0];
 				var p = document.createElement('p');
 					var user = document.createElement('span');
 						user.setAttribute('class', data.team);
-						var usertext = document.createTextNode(data.username + ': ');
+						var usertext = document.createTextNode(data.time + ' ' + data.username + ': ');
 						user.appendChild(usertext);
 					p.appendChild(user);
 					var ptext = document.createTextNode(data.kommentar);
 					p.appendChild(ptext);
 				kommentwrapper.appendChild(p);
-				//kommentwrapper.insertBefore(p, kommentwrapper.childNodes[0]); 
 	};
 	function kommer(id){
 		socket.emit('addkommer', id);
@@ -399,10 +445,18 @@
 	socket.on('nykommer', function (data) {
 		document.getElementById(data.id).getElementsByClassName('kommerbutton')[0].setAttribute('value', 'Kommer! (' + data.data.length + ')');
 	});
-	function remove(id){
-		var losen = prompt("Admin säg det hemliga ordet!", "");
-		if (losen == null || losen == ""){}else{
-			socket.emit('remove', {"id": id, "losen": losen});
+	function remove(id, username, team){
+		var localinfo = JSON.parse(localStorage.getItem('userdata'));
+		if(localinfo.username == username && localinfo.team == team){
+			var ok = confirm("Säker på att du vill ta bort inlägget?");
+			if (ok == true) {
+			    socket.emit('remove', {"id": id, "losen": "false", "username": username, "team": team});
+			};
+		}else{
+			var losen = prompt("Admin säg det hemliga ordet!", "");
+			if (losen == null || losen == ""){}else{
+				socket.emit('remove', {"id": id, "losen": losen});
+			};
 		};
 	};
 	socket.on('remove', function (id) {
@@ -412,6 +466,61 @@
 			addnopost();
 		};
 	});
+	function edit(id, username, team, element){
+		if(element.tagName == 'P'){
+			var localinfo = JSON.parse(localStorage.getItem('userdata'));
+			if(localinfo.username == username && localinfo.team == team){
+				changeedit(id, 'false');
+			}else{
+				var losen = prompt("Admin säg det hemliga ordet!", "");
+				if (losen == null || losen == ""){}else{
+					socket.emit('isadmin', {"id": id, "losen": losen});
+				};
+			};
+		}else{
+			console.log(id + ' - ' + username + ' - ' + team);
+			var textwrapper = document.getElementById(id).getElementsByClassName('posttext')[0];
+				var inputs = textwrapper.getElementsByTagName('input');
+			socket.emit('edittext', {"id": id, "time": inputs[0].value, "text": inputs[1].value, "admin": element.getAttribute('data-admin')});
+		};
+	};
+	socket.on('edittext', function (data) {
+		console.log(data)
+		var textwrapper = document.getElementById(data.id).getElementsByClassName('posttext')[0];
+			textwrapper.setAttribute('onclick', 'edit("' + data.id + '", "' + data.username + '", "' + data.team + '", this);');
+			var kommentartext = document.createTextNode(data.time + ' ' + data.text);
+			removechilds(textwrapper);
+			textwrapper.appendChild(kommentartext);
+	});
+	socket.on('isadmin', function (data) {
+		console.log(data)
+		if(data.todo == 'true'){
+			changeedit(data.id, 'true');
+		};
+	});
+	function changeedit(id, admin){
+		var textwrapper = document.getElementById(id).getElementsByClassName('posttext')[0];
+		var textsplit = textwrapper.innerText.split(' ');
+		var time = textsplit[0];
+			textsplit.shift()
+		var text = textsplit.join(' ');
+		removechilds(textwrapper);
+			var timeelem = document.createElement('input');
+				timeelem.setAttribute('type', 'time');
+				timeelem.setAttribute('value', time);
+				timeelem.setAttribute('data-admin', admin);
+				timeelem.setAttribute('onblur', textwrapper.getAttribute('onclick'));
+				timeelem.setAttribute('onkeydown', 'checkkey(event, this, false, "edit")');
+			textwrapper.appendChild(timeelem);
+			var textelem = document.createElement('input');
+				textelem.setAttribute('type', 'text');
+				textelem.setAttribute('value', text);
+				textelem.setAttribute('data-admin', admin);
+				textelem.setAttribute('onblur', textwrapper.getAttribute('onclick'));
+				textelem.setAttribute('onkeydown', 'checkkey(event, this, false, "edit")');
+			textwrapper.appendChild(textelem);
+			textwrapper.removeAttribute('onclick')
+	};
 	socket.on('disconnect', function () {
 		location.reload();
 	});

@@ -147,6 +147,7 @@ io.sockets.on('connection', function (socket, username) {
 		socket.broadcast.emit('nyraid', data);
 	});
 	socket.on('addkomment', function (data){
+		data.time = getDate().tid;
 		data.username = socket.username;
 		data.team = socket.team;
 		for (var i = dataraids.length - 1; i >= 0; i--) {
@@ -173,16 +174,72 @@ io.sockets.on('connection', function (socket, username) {
 		};
 	});
 	socket.on('remove', function (data){
-		if(admin.password == data.losen){
+		if(data.losen == 'false'){
 			for (var i = dataraids.length - 1; i >= 0; i--) {
 				if(dataraids[i].id == data.id){
-					dataraids.splice(i, 1);
-					fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
-					socket.emit('remove', data.id);
-					socket.broadcast.emit('remove', data.id);
-					break;
+					if(dataraids[i].username == socket.username && dataraids[i].team == socket.team){
+						dataraids.splice(i, 1);
+						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
+						socket.emit('remove', data.id);
+						socket.broadcast.emit('remove', data.id);
+						break;
+					};
 				};
 			};
+		}else{
+			if(admin.password == data.losen){
+				for (var i = dataraids.length - 1; i >= 0; i--) {
+					if(dataraids[i].id == data.id){
+						dataraids.splice(i, 1);
+						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
+						socket.emit('remove', data.id);
+						socket.broadcast.emit('remove', data.id);
+						break;
+					};
+				};
+			};
+		};
+	});
+	socket.on('edittext', function (data){
+		console.log(data);
+		if(data.admin == 'true'){
+			if(socket.admin == 'true'){
+				for (var i = dataraids.length - 1; i >= 0; i--) {
+					if(dataraids[i].id == data.id){
+						dataraids[i].raidtid = data.time;
+						dataraids[i].raidkommentar = data.text;
+						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
+						var tosend = {"id": dataraids[i].id, "username": dataraids[i].username, "team": dataraids[i].team, "time": dataraids[i].raidtid, "text": dataraids[i].raidkommentar};
+						socket.emit('edittext', tosend);
+						socket.broadcast.emit('edittext', tosend);
+						break;
+					};
+				};
+			};
+		}else{
+			for (var i = dataraids.length - 1; i >= 0; i--) {
+				if(dataraids[i].id == data.id){
+					if(dataraids[i].username == socket.username && dataraids[i].team == socket.team){
+						dataraids[i].raidtid = data.time;
+						dataraids[i].raidkommentar = data.text;
+						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
+						var tosend = {"id": dataraids[i].id, "username": dataraids[i].username, "team": dataraids[i].team, "time": dataraids[i].raidtid, "text": dataraids[i].raidkommentar};
+						socket.emit('edittext', tosend);
+						socket.broadcast.emit('edittext', tosend);
+						break;
+					};
+				};
+			};
+		};
+	});
+	socket.on('isadmin', function (data){
+		console.log(admin.password == data.losen)
+		if(admin.password == data.losen){
+			socket.admin = 'true';
+			socket.emit('isadmin', {"todo": "true", "id": data.id});
+		}else{
+			socket.admin = 'false';
+			socket.emit('isadmin', {"todo": "false"});
 		};
 	});
 	socket.on('disconnect', function (){
