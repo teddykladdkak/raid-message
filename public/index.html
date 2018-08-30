@@ -160,12 +160,24 @@
 		.kommentnummer {
 			padding-left: 0px;
 		}
+		#prompt {
+			background-color: white;
+			position: fixed;
+			top: 0px;
+			right: 0px;
+			bottom: 0px;
+			left: 0px;
+			z-index: 999;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
 	</style>
 </head>
 <body onload="load();">
 	<div id="registrera" style="display: none;">
 		<p>Användarnamn/Username<br/>(Vanligt namn, namn i Pokémon Go, lämna blank för "Anonym")</p>
-		<input type="text" id="username">
+		<input type="text" id="namn">
 		<p>Lag/Team</p>
 		<table>
 			<tr id="teamwrapper">
@@ -216,9 +228,50 @@
 			
 		</div>
 	</div>
+	<div id="prompt" style="display: none;">
+		<span id="content">
+			<p id="prompttext"></p>
+			<span id="wrapperpromptinput"></span>
+			<input type="button" id="promptaction" value=""><input type="button" id="promptback" onclick="promptclose();" value="Avbryt">
+		</span>
+	</div>
 <script src="socket.io/socket.io.js"></script>
 <script src="script/megapix-image.js"></script>
 <script type="text/javascript">
+	function promptopen(message, inputtodo, func, active, back, data){
+		if(inputtodo == 'false'){}else{
+			var inputwrapper = document.getElementById('wrapperpromptinput');
+				removechilds(inputwrapper);
+				var input = document.createElement('input');
+					input.setAttribute('type', 'text');
+					input.setAttribute('id', 'promptinput');
+					input.setAttribute('onkeydown', 'checkkey(event, this, "ok");')
+				inputwrapper.appendChild(input);
+				inputwrapper.appendChild(document.createElement('br'));
+		};
+		var p = document.getElementById('prompttext');
+		removechilds(p);
+			p.appendChild(document.createTextNode(message));
+		var actionbutton = document.getElementById('promptaction');
+			actionbutton.value = active;
+			actionbutton.setAttribute('onclick', func + '(this, "' + inputtodo + '");promptclose();');
+			actionbutton.setAttribute('data-info', data);
+		document.getElementById('promptback').value = back;
+		document.getElementById('prompt').removeAttribute('style');
+		if(inputtodo == 'false'){}else{
+			document.getElementById('promptinput').focus();
+		};
+	};
+	function promptclose(){
+		document.getElementById('prompt').setAttribute('style', 'display: none;');
+		removechilds(document.getElementById('prompttext'));
+		removechilds(document.getElementById('wrapperpromptinput'));
+		var actionbutton = document.getElementById('promptaction');
+			actionbutton.value = '';
+			actionbutton.removeAttribute('onclick');
+			actionbutton.removeAttribute('data-info');
+		document.getElementById('promptback').value = '';
+	};
 	function removechilds(parent){
 		if(parent.hasChildNodes()){
 			while (parent.hasChildNodes()) {
@@ -241,6 +294,8 @@
 				element.blur();
 			}else if(todo == 'kommentsend'){
 				skickakommentar(id);
+			}else if(todo == 'ok'){
+				document.getElementById('promptaction').click();
 			};
 			event.preventDefault();
 			e.preventDefault();
@@ -295,7 +350,6 @@
 		if(!localStorage.getItem('userdata')){
 			document.getElementById('registrera').removeAttribute('style');
 		}else{
-			console.log('Debugg: Användardata finns redan, skickas till server.');
 			socket.emit('login', localStorage.getItem('userdata'));
 		};
 		getraids();
@@ -313,12 +367,10 @@
 		xmlhttp.onreadystatechange = function() {
 		    if (this.readyState == 4 && this.status == 200) {
 		        var data = JSON.parse(this.responseText);
-		        console.log(data.raiddata);
 		        if(!data.raiddata){}else if(data.raiddata.length == 0){
 		        	addnopost();
 		        }else{
 					for (var i = data.raiddata.length - 1; i >= 0; i--) {
-						console.log(data.raiddata[i]);
 						addpost(data.raiddata[i].username, data.raiddata[i].team, data.raiddata[i].raidtid, data.raiddata[i].raidkommentar, data.raiddata[i].raidimage, data.raiddata[i].kommer, data.raiddata[i].kommentar, data.raiddata[i].id, 'false');
 					};
 				};
@@ -329,7 +381,7 @@
 	}
 	function login(){
 		document.getElementById('registrera').setAttribute('style', 'display: none;');
-		var username = document.getElementById('username').value;
+		var username = document.getElementById('namn').value;
 		if(username == ''){
 			var username = 'Anonym';
 		};
@@ -343,7 +395,6 @@
 		socket.emit('login', '{"username": "' + username + '", "team": "' + team + '"}');
 	};
 	socket.on('sendinfo', function (data) {
-		console.log('Debugg: Data mottages från server.');
 		document.getElementById('wrapper').removeAttribute('style');
 		var userwrapper = document.getElementById('anvandarnamn');
 			userwrapper.appendChild(document.createTextNode(data.userinfo.username));
@@ -357,7 +408,6 @@
 		addpost(data.username, data.team, data.raidtid, data.raidkommentar, data.raidimage, data.kommer, data.kommentar, data.id, 'true');
 	});
 	function addpost(username, team, raidtid, raidkommentar, raidimage, kommernummer, kommentarer, id, firstorlast){
-		console.log(kommentarer);
 		var wrapper = document.getElementById('posts');
 			var body = document.createElement('span');
 				body.setAttribute('class', 'postbody');
@@ -508,10 +558,7 @@
 		};
 	};
 	socket.on('nykommentar', function (data) {
-		console.log(data);
 		var button = document.getElementById(data.id).getElementsByClassName('kommentnummer')[0];
-			//var num = parseInt(button.value.split('(')[1].split(')')[0]) + 1;
-			//button.setAttribute('value', 'Kommentar (' + num + ')');
 			var number = document.createTextNode('(' + (parseInt(button.getAttribute('data-num')) + 1) + ')');
 			removechilds(button);
 			button.appendChild(number);
@@ -542,16 +589,18 @@
 	function remove(id, username, team){
 		var localinfo = JSON.parse(localStorage.getItem('userdata'));
 		if(localinfo.username == username && localinfo.team == team){
-			var ok = confirm("Säker på att du vill ta bort inlägget?");
-			if (ok == true) {
-			    socket.emit('remove', {"id": id, "losen": "false", "username": username, "team": team});
-			};
+			var data = '{"id": "' + id + '", "losen": "false", "username": "' + username + '", "team": "' + team + '"}';
+			promptopen('Säker på att du vill ta bort ditt inlägg?', 'false', 'removeaction', 'Ja', 'Nej', data);
 		}else{
-			var losen = prompt("Admin säg det hemliga ordet!", "");
-			if (losen == null || losen == ""){}else{
-				socket.emit('remove', {"id": id, "losen": losen});
-			};
+			promptopen('Admin säg det hemliga ordet!', 'true', 'removeaction', 'Logga in', 'Avbryt', '{"id": "' + id + '"}');
 		};
+	};
+	function removeaction(element, inputtodo){
+		var datatosend = JSON.parse(element.getAttribute('data-info'));
+		if(inputtodo == 'true'){
+			datatosend.losen = document.getElementById('promptinput').value;
+		};
+		socket.emit('remove', datatosend);
 	};
 	socket.on('remove', function (id) {
 		var wrapper = document.getElementById(id);
@@ -566,20 +615,22 @@
 			if(localinfo.username == username && localinfo.team == team){
 				changeedit(id, 'false');
 			}else{
-				var losen = prompt("Admin säg det hemliga ordet!", "");
-				if (losen == null || losen == ""){}else{
-					socket.emit('isadmin', {"id": id, "losen": losen});
-				};
+				promptopen('Admin säg det hemliga ordet!', 'true', 'adminedit', 'Logga in', 'Avbryt', '{"id": "' + id + '"}');
 			};
 		}else{
-			console.log(id + ' - ' + username + ' - ' + team);
 			var textwrapper = document.getElementById(id).getElementsByClassName('posttext')[0];
 				var inputs = textwrapper.getElementsByTagName('input');
 			socket.emit('edittext', {"id": id, "time": inputs[0].value, "text": inputs[1].value, "admin": element.getAttribute('data-admin')});
 		};
 	};
+	function adminedit(element, inputtodo){
+		var datatosend = JSON.parse(element.getAttribute('data-info'));
+		if(inputtodo == 'true'){
+			datatosend.losen = document.getElementById('promptinput').value;
+		};
+		socket.emit('isadmin', datatosend);
+	};
 	socket.on('edittext', function (data) {
-		console.log(data)
 		var textwrapper = document.getElementById(data.id).getElementsByClassName('posttext')[0];
 			textwrapper.setAttribute('onclick', 'edit("' + data.id + '", "' + data.username + '", "' + data.team + '", this);');
 			var kommentartext = document.createTextNode(data.time + ' ' + data.text);
@@ -587,7 +638,6 @@
 			textwrapper.appendChild(kommentartext);
 	});
 	socket.on('isadmin', function (data) {
-		console.log(data)
 		if(data.todo == 'true'){
 			changeedit(data.id, 'true');
 		};

@@ -118,20 +118,9 @@ var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket, username) {
 	// socket.emit('err', 'Användare kunde inte hittas.');
 	socket.on('login', function (data){
-		console.log('Debugg: Användare börjar logga in.');
 		var datajson = JSON.parse(data);
 		socket.username = datajson.username;
 		socket.team = datajson.team;
-		console.log('Namn: ' + datajson.username + ', Team: ' + datajson.team);
-		/*var dataraidsfirst = [];
-		for (var i = 0; i < dataraids.length; i++){
-			if(i == 10){
-				i = 9999999999;
-			};
-			dataraidsfirst.push(dataraids[i]);
-		};*/
-		console.log('Debugg: Alla reggade raider skickas till användaren.');
-		//socket.emit('sendinfo', {"userinfo": datajson, "dataraidsfirst": dataraidsfirst});
 		socket.emit('sendinfo', {"userinfo": datajson});
 	});
 	socket.on('postraid', function (data){
@@ -140,7 +129,6 @@ io.sockets.on('connection', function (socket, username) {
 		data.kommer = [{"username": socket.username, "team": socket.team}];
 		data.kommentar = [];
 		data.id = randomString(10);
-		console.log(data);
 		dataraids.push(data);
 		fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
 		socket.emit('nyraid', data);
@@ -152,7 +140,6 @@ io.sockets.on('connection', function (socket, username) {
 		data.team = socket.team;
 		for (var i = dataraids.length - 1; i >= 0; i--) {
 			if(dataraids[i].id == data.id){
-				console.log('Hittade inlägget! Lägger till kommentar.');
 				dataraids[i].kommentar.push(data);
 				fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
 				socket.emit('nykommentar', data);
@@ -164,7 +151,6 @@ io.sockets.on('connection', function (socket, username) {
 	socket.on('addkommer', function (id){
 		for (var i = dataraids.length - 1; i >= 0; i--) {
 			if(dataraids[i].id == id){
-				console.log('Hittade inlägget! Lägger till att användare kommer.');
 				dataraids[i].kommer.push({"username": socket.username, "team": socket.team});
 				fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
 				socket.emit('nykommer', {"id": id, "data": dataraids[i].kommer});
@@ -201,7 +187,6 @@ io.sockets.on('connection', function (socket, username) {
 		};
 	});
 	socket.on('edittext', function (data){
-		console.log(data);
 		if(data.admin == 'true'){
 			if(socket.admin == 'true'){
 				for (var i = dataraids.length - 1; i >= 0; i--) {
@@ -233,7 +218,6 @@ io.sockets.on('connection', function (socket, username) {
 		};
 	});
 	socket.on('isadmin', function (data){
-		console.log(admin.password == data.losen)
 		if(admin.password == data.losen){
 			socket.admin = 'true';
 			socket.emit('isadmin', {"todo": "true", "id": data.id});
