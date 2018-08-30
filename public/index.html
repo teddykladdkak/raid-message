@@ -28,6 +28,12 @@
 			margin: 0px;
 			padding: 0px;
 		}
+		table, tr, td {
+			border-collapse: collapse;
+		}
+		td {
+			vertical-align: middle;
+		}
 		input, select, textarea {
 			box-sizing : border-box;
 		}
@@ -121,6 +127,39 @@
 		#wrapper {
 			padding-top: 40px;
 		}
+		#meny .svg {
+			height: 35px;
+			background-color: white;
+			color: black;
+			padding: 2px 5px;
+			margin-right: 10px;
+			min-width: 34px;
+		}
+		#posts .svg, .fributton {
+			max-height: 35px;
+			max-width: 35px;
+			min-width: 35px;
+			background-color: white;
+			color: black;
+			padding: 5px;
+			margin-top: 5px;
+			margin-right: 5px;
+		}
+		#posts .invert, .fributton {
+			background-color: black;
+			color: white;
+			padding: 2px;
+		}
+		.fributton {
+			padding: 5px;
+		}
+		#posts .invert svg {
+			background-color: black;
+			color: white;
+		}
+		.kommentnummer {
+			padding-left: 0px;
+		}
 	</style>
 </head>
 <body onload="load();">
@@ -144,20 +183,21 @@
 				</td>
 			</tr>
 		</table>
-		<input type="button" value="Registrera" onclick="login()">
+		<svg onclick="login()" aria-hidden="true" class="fributton" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M416 448h-84c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h84c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32h-84c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h84c53 0 96 43 96 96v192c0 53-43 96-96 96zm-47-201L201 79c-15-15-41-4.5-41 17v96H24c-13.3 0-24 10.7-24 24v96c0 13.3 10.7 24 24 24h136v96c0 21.5 26 32 41 17l168-168c9.3-9.4 9.3-24.6 0-34z"></path></svg>
 	</div>
 	<div id="wrapper" style="display: none;">
 		<div id="meny">
 			<table class="tablewidth">
 				<tr>
 					<td>
-						<input type="button" value="Byt användare" onclick="changeuser();">
+						<!-- <input type="button" value="Byt användare"> -->
+						<svg onclick="changeuser();" aria-hidden="true" class="svg" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M497 273L329 441c-15 15-41 4.5-41-17v-96H152c-13.3 0-24-10.7-24-24v-96c0-13.3 10.7-24 24-24h136V88c0-21.4 25.9-32 41-17l168 168c9.3 9.4 9.3 24.6 0 34zM192 436v-40c0-6.6-5.4-12-12-12H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h84c6.6 0 12-5.4 12-12V76c0-6.6-5.4-12-12-12H96c-53 0-96 43-96 96v192c0 53 43 96 96 96h84c6.6 0 12-5.4 12-12z"></path></svg>
 					</td>
 					<td class="center head">
 						<span id="anvandarnamn"></span>
 					</td>
 					<td class="right">
-						<input type="button" value="Lägg till raid" onclick="addraid(this);" id="buttonlaggtillraid">
+						<svg onclick="addraid();" id="buttonlaggtillraid" aria-hidden="true" class="svg" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-32 252c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92H92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"></path></svg>
 					</td>
 				</tr>
 			</table>
@@ -170,7 +210,8 @@
 			<input type="time" id="raidtid">
 			<p>Kommentar</p>
 			<textarea id="raidkommentar" onkeydown="checkkey(event, this, 'postbutton', 'click');"></textarea><br/>
-			<input type="button" value="Posta!" onclick="postraid();" class="postbutton">
+			<svg onclick="postraid();" class="postbutton fributton" aria-hidden="true" class="svg" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path></svg>
+			<svg onclick="hideaddreaid();" aria-hidden="true" class="fributton" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z"></path></svg>
 		</div>
 		<div id="posts">
 			
@@ -212,19 +253,23 @@
 		if(!dateannan && !timeannan && !milisecsave){var date = new Date();}else if(!milisecsave){var annatdatum = dateannan.split('-');var annattid = timeannan.split(':');var date = new Date(annatdatum[0], annatdatum[1] - 1, annatdatum[2], annattid[0], annattid[1]);}else{var date = new Date(parseInt(milisecsave));};
 		return {"datum": date.getFullYear() + '-' + addzero(date.getMonth() + 1) + '-' + addzero(date.getDate()), "tid": addzero(date.getHours()) + ':' + addzero(date.getMinutes()), "milisec": date.getTime(), "manad": date.getFullYear() + '-' + addzero(date.getMonth() + 1)};
 	};
-	function addraid(element){
+	function addraid(){
 		document.getElementById('raidtid').value = getDate().tid;
-		element.value = 'Avbryt';
-		element.setAttribute('onclick', 'hideaddreaid(this);');
+		var button = document.getElementById('buttonlaggtillraid');
+			button.setAttribute('onclick', 'hideaddreaid();');
+			button.setAttribute('viewBox', '0 0 512 512');
+			button.firstChild.setAttribute('d', 'M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z');
 		document.getElementById('addraid').removeAttribute('style');
 	};
-	function hideaddreaid(element){
+	function hideaddreaid(){
 		document.getElementById('raidimage').value = '';
 		document.getElementById('raidimagepreview').src = 'img/ingenbild.png';
 		document.getElementById('raidtid').value = '';
 		document.getElementById('raidkommentar').value = '';
-		element.value = 'Lägg till raid';
-		element.setAttribute('onclick', 'addraid(this);');
+		var button = document.getElementById('buttonlaggtillraid');
+			button.setAttribute('onclick', 'addraid(this);');
+			button.setAttribute('viewBox', '0 0 448 512');
+			button.firstChild.setAttribute('d', 'M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-32 252c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92H92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z');
 		document.getElementById('addraid').setAttribute('style', 'display: none;');
 	};
 	function postraid(){
@@ -328,10 +373,17 @@
 						usertr.appendChild(usertd);
 						var taborttd = document.createElement('td');
 							taborttd.setAttribute('class', 'right');
-							var tabort = document.createElement('input');
-								tabort.setAttribute('type', 'button');
-								tabort.setAttribute('value', 'X');
+							var tabort = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+								tabort.setAttribute('aria-hidden', 'true');
+								tabort.setAttribute('class', 'svg');
+								tabort.setAttribute('role', 'img');
+								tabort.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+								tabort.setAttribute('viewBox', '0 0 512 512');
 								tabort.setAttribute('onclick', 'remove("' + id + '", "' + username + '", "' + team + '");');
+								var tabortpath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+									tabortpath.setAttribute('fill', 'currentColor');
+									tabortpath.setAttribute('d', 'M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z');
+								tabort.appendChild(tabortpath);
 							taborttd.appendChild(tabort);
 						usertr.appendChild(taborttd);
 					user.appendChild(usertr);
@@ -353,16 +405,33 @@
 					tableextra.setAttribute('class', 'tablewidth');
 					var tabletr = document.createElement('tr');
 						var kommertd = document.createElement('td');
-							var kommer = document.createElement('input');
-								kommer.setAttribute('type', 'button');
-								kommer.setAttribute('value', 'Kommer! (' + kommernummer.length + ')');
-								kommer.setAttribute('onclick', 'kommer("' + id + '");');
-								kommer.setAttribute('class', 'kommerbutton');
+							kommertd.setAttribute('onclick', 'kommer("' + id + '");');
+							kommertd.setAttribute('class', 'invert');
+							var kommer = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+								kommer.setAttribute('aria-hidden', 'true');
+								kommer.setAttribute('class', 'svg');
+								kommer.setAttribute('role', 'img');
+								kommer.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+								kommer.setAttribute('viewBox', '0 0 640 512');
+								var kommerpath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+									kommerpath.setAttribute('fill', 'currentColor');
+									kommerpath.setAttribute('d', 'M624 208h-64v-64c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v64h-64c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h64v64c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-64h64c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm-400 48c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z');
+								kommer.appendChild(kommerpath);
 							kommertd.appendChild(kommer);
 						tabletr.appendChild(kommertd);
+						var kommerantaltd = document.createElement('td');
+							kommerantaltd.setAttribute('onclick', 'kommer("' + id + '");');
+							kommerantaltd.setAttribute('class', 'kommernummer invert');
+							var kommerantal = document.createTextNode('(' + kommernummer.length + ')');
+							kommerantaltd.appendChild(kommerantal);
+						tabletr.appendChild(kommerantaltd);
+						var spacer = document.createElement('td');
+							spacer.setAttribute('width', '100%');
+						tabletr.appendChild(spacer);
 						var kommentartd = document.createElement('td');
-							kommentartd.setAttribute('class', 'right');
-							var kommentar = document.createElement('input');
+							kommentartd.setAttribute('class', 'right invert');
+							//<svg aria-hidden="true" data-prefix="far" data-icon="comments" class="svg-inline--fa fa-comments fa-w-18" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M532 386.2c27.5-27.1 44-61.1 44-98.2 0-80-76.5-146.1-176.2-157.9C368.3 72.5 294.3 32 208 32 93.1 32 0 103.6 0 192c0 37 16.5 71 44 98.2-15.3 30.7-37.3 54.5-37.7 54.9-6.3 6.7-8.1 16.5-4.4 25 3.6 8.5 12 14 21.2 14 53.5 0 96.7-20.2 125.2-38.8 9.2 2.1 18.7 3.7 28.4 4.9C208.1 407.6 281.8 448 368 448c20.8 0 40.8-2.4 59.8-6.8C456.3 459.7 499.4 480 553 480c9.2 0 17.5-5.5 21.2-14 3.6-8.5 1.9-18.3-4.4-25-.4-.3-22.5-24.1-37.8-54.8zm-392.8-92.3L122.1 305c-14.1 9.1-28.5 16.3-43.1 21.4 2.7-4.7 5.4-9.7 8-14.8l15.5-31.1L77.7 256C64.2 242.6 48 220.7 48 192c0-60.7 73.3-112 160-112s160 51.3 160 112-73.3 112-160 112c-16.5 0-33-1.9-49-5.6l-19.8-4.5zM498.3 352l-24.7 24.4 15.5 31.1c2.6 5.1 5.3 10.1 8 14.8-14.6-5.1-29-12.3-43.1-21.4l-17.1-11.1-19.9 4.6c-16 3.7-32.5 5.6-49 5.6-54 0-102.2-20.1-131.3-49.7C338 339.5 416 272.9 416 192c0-3.4-.4-6.7-.7-10C479.7 196.5 528 238.8 528 288c0 28.7-16.2 50.6-29.7 64z"></path></svg>
+							/*var kommentar = document.createElement('input');
 								kommentar.setAttribute('type', 'button');
 								kommentar.setAttribute('class', 'kommentarbutton');
 								kommentar.setAttribute('onclick', 'hideshowkomment("' + id + '");');
@@ -371,8 +440,27 @@
 								}else{
 									kommentar.setAttribute('value', 'Kommentar (' + kommentarer.length + ')');
 								};
+							kommentartd.appendChild(kommentar);*/
+							kommentartd.setAttribute('onclick', 'hideshowkomment("' + id + '");');
+							var kommentar = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+								kommentar.setAttribute('aria-hidden', 'true');
+								kommentar.setAttribute('class', 'svg');
+								kommentar.setAttribute('role', 'img');
+								kommentar.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+								kommentar.setAttribute('viewBox', '0 0 576 512');
+								var kommentarpath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+									kommentarpath.setAttribute('fill', 'currentColor');
+									kommentarpath.setAttribute('d', 'M532 386.2c27.5-27.1 44-61.1 44-98.2 0-80-76.5-146.1-176.2-157.9C368.3 72.5 294.3 32 208 32 93.1 32 0 103.6 0 192c0 37 16.5 71 44 98.2-15.3 30.7-37.3 54.5-37.7 54.9-6.3 6.7-8.1 16.5-4.4 25 3.6 8.5 12 14 21.2 14 53.5 0 96.7-20.2 125.2-38.8 9.2 2.1 18.7 3.7 28.4 4.9C208.1 407.6 281.8 448 368 448c20.8 0 40.8-2.4 59.8-6.8C456.3 459.7 499.4 480 553 480c9.2 0 17.5-5.5 21.2-14 3.6-8.5 1.9-18.3-4.4-25-.4-.3-22.5-24.1-37.8-54.8zm-392.8-92.3L122.1 305c-14.1 9.1-28.5 16.3-43.1 21.4 2.7-4.7 5.4-9.7 8-14.8l15.5-31.1L77.7 256C64.2 242.6 48 220.7 48 192c0-60.7 73.3-112 160-112s160 51.3 160 112-73.3 112-160 112c-16.5 0-33-1.9-49-5.6l-19.8-4.5zM498.3 352l-24.7 24.4 15.5 31.1c2.6 5.1 5.3 10.1 8 14.8-14.6-5.1-29-12.3-43.1-21.4l-17.1-11.1-19.9 4.6c-16 3.7-32.5 5.6-49 5.6-54 0-102.2-20.1-131.3-49.7C338 339.5 416 272.9 416 192c0-3.4-.4-6.7-.7-10C479.7 196.5 528 238.8 528 288c0 28.7-16.2 50.6-29.7 64z');
+								kommentar.appendChild(kommentarpath);
 							kommentartd.appendChild(kommentar);
 						tabletr.appendChild(kommentartd);
+						var kommentarantaltd = document.createElement('td');
+							kommentarantaltd.setAttribute('onclick', 'hideshowkomment("' + id + '");');
+							kommentarantaltd.setAttribute('class', 'kommentnummer invert');
+							kommentarantaltd.setAttribute('data-num', kommentarer.length);
+							var kommerantal = document.createTextNode('(' + kommentarer.length + ')');
+							kommentarantaltd.appendChild(kommerantal);
+						tabletr.appendChild(kommentarantaltd);
 					tableextra.appendChild(tabletr);
 				body.appendChild(tableextra);
 				var kommentarwrapper = document.createElement('div');
@@ -421,9 +509,12 @@
 	};
 	socket.on('nykommentar', function (data) {
 		console.log(data);
-		var button = document.getElementById(data.id).getElementsByClassName('kommentarbutton')[0];
-			var num = parseInt(button.value.split('(')[1].split(')')[0]) + 1;
-			button.setAttribute('value', 'Kommentar (' + num + ')');
+		var button = document.getElementById(data.id).getElementsByClassName('kommentnummer')[0];
+			//var num = parseInt(button.value.split('(')[1].split(')')[0]) + 1;
+			//button.setAttribute('value', 'Kommentar (' + num + ')');
+			var number = document.createTextNode('(' + (parseInt(button.getAttribute('data-num')) + 1) + ')');
+			removechilds(button);
+			button.appendChild(number);
 		addkomment(data);
 	});
 	function addkomment(data){
@@ -443,7 +534,10 @@
 		socket.emit('addkommer', id);
 	};
 	socket.on('nykommer', function (data) {
-		document.getElementById(data.id).getElementsByClassName('kommerbutton')[0].setAttribute('value', 'Kommer! (' + data.data.length + ')');
+		var wrapper = document.getElementById(data.id).getElementsByClassName('kommernummer')[0];
+		removechilds(wrapper);
+			var newtext = document.createTextNode('(' + data.data.length + ')')
+			wrapper.appendChild(newtext);
 	});
 	function remove(id, username, team){
 		var localinfo = JSON.parse(localStorage.getItem('userdata'));
