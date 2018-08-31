@@ -130,6 +130,7 @@ io.sockets.on('connection', function (socket, username) {
 		data.kommentar = [];
 		data.id = randomString(10);
 		data.exraid = data.exraid;
+		data.location = data.location;
 		dataraids.push(data);
 		fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
 		socket.emit('nyraid', data);

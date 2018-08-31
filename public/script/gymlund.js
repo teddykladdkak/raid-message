@@ -525,7 +525,7 @@ var gyms = [
 		"latitud": "13.1955710"
 	},
 	"embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2247.9577599626105!2d13.193382315928753!3d55.70710598054115!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTXCsDQyJzI1LjYiTiAxM8KwMTEnNDQuMSJF!5e0!3m2!1ssv!2sus!4v1507118683003",
-	"exraid": false,
+	"exraid": true,
 	"rip": false
 },{
 	"namn": "Sorgen",
