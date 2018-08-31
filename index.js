@@ -116,7 +116,7 @@ function loadpage(filePath, extname, response, contentType){
 // Loading socket.io
 var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket, username) {
-	// socket.emit('err', 'Användare kunde inte hittas.');
+	socket.emit('loadjson', '?');
 	socket.on('login', function (data){
 		var datajson = JSON.parse(data);
 		socket.username = datajson.username;
@@ -227,14 +227,6 @@ io.sockets.on('connection', function (socket, username) {
 			socket.admin = 'false';
 			socket.emit('isadmin', {"todo": "false"});
 		};
-	});
-	socket.on('disconnect', function (){
-		var connected = io.sockets.sockets[socket.pair];
-		if(!connected || connected == ''){}else{
-			connected.pair = '';
-			connected.emit('kopplingbruten', {type: 'error', text: 'Av någon anlening har parkopplingen avbrutits.'});
-		};
-		socket.pair = '';
 	});
 });
 server.listen(config.port);

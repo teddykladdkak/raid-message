@@ -219,9 +219,51 @@
 			height: 120px;
 			width: 120px;
 		}
+		#message {
+			position: fixed;
+		    left: 0px;
+		    top: 0px;
+		    width:100%;
+		    margin: 0px;
+		    padding: 5px;
+
+		    z-index: 999;
+
+			font-weight: bold;
+			text-align: center;
+
+			opacity: 0;
+			display: none;
+		}
+		#message.show {
+			display: block;
+		    -webkit-animation: fadeinout 3s linear forwards;
+		    animation: fadeinout 3s linear forwards;
+		}
+			@-webkit-keyframes fadeinout {
+			  0%,100% { opacity: 0; }
+			  10%, 90% { opacity: 1; }
+			}
+			@keyframes fadeinout {
+			  0%,100% { opacity: 0; }
+			  10%, 90% { opacity: 1; }
+			}
+		#message.error {
+			background-color: red;
+			color: white;
+		}
+		#message.info {
+			background-color: yellow;
+			color: black;
+		}
+		#message.good {
+			background-color: green;
+			color: white;
+		}
 	</style>
 </head>
 <body onload="load();">
+	<div id="message">Test text</div>
 	<div id="registrera" style="display: none;">
 		<p>Användarnamn/Username<br/>(Vanligt namn, namn i Pokémon Go, lämna blank för "Anonym")</p>
 		<input type="text" id="namn">
@@ -255,7 +297,7 @@
 						<span id="anvandarnamn"></span>
 					</td>
 					<td class="right">
-						<svg onclick="addraid();" id="buttonlaggtillraid" aria-hidden="true" class="svg" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-32 252c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92H92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"></path></svg>
+						<svg onclick="addraid();" id="buttonlaggtillraid" aria-hidden="true" class="svg nooffline" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-32 252c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92H92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"></path></svg>
 					</td>
 				</tr>
 			</table>
@@ -297,7 +339,9 @@
 	var config = {
 		imgdesaturate: 60, //0-255
 		confidence: 70, //0-100
-		sprak: 'swe'
+		sprak: 'swe',
+		nopost: 'Inga raider reggade ännu idag.. Blir du den första?',
+		loadjson: 'Du har varit bortkopplad från server, raid laddas om.'
 	}
 	function imgtotext(file){
 		if(!file){notimg();return false;}else if(file.type == 'image/png' || file.type == 'image/jpeg'){}else{notimg();return false;};
@@ -536,23 +580,25 @@
 		}else{
 			socket.emit('login', localStorage.getItem('userdata'));
 		};
-		getraids();
 	};
-	function addnopost(){
+	function addinfo(message){
 		var wrapper = document.getElementById('posts');
     		var noposts = document.createElement('p');
     			noposts.setAttribute('id', 'nopost');
-    			var nopoststext = document.createTextNode('Inga raider reggade ännu idag.. Blir du den första?');
+    			var nopoststext = document.createTextNode(message);
     			noposts.appendChild(nopoststext);
     		wrapper.appendChild(noposts);
 	};
 	function getraids(){
+		removechilds(document.getElementById('posts'));
+		addinfo(config.loadjson);
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
 		    if (this.readyState == 4 && this.status == 200) {
+		    	removechilds(document.getElementById('posts'));
 		        var data = JSON.parse(this.responseText);
 		        if(!data.raiddata){}else if(data.raiddata.length == 0){
-		        	addnopost();
+		        	addinfo(config.nopost);
 		        }else{
 					for (var i = data.raiddata.length - 1; i >= 0; i--) {
 						addpost(data.raiddata[i].username, data.raiddata[i].team, data.raiddata[i].raidtid, data.raiddata[i].raidkommentar, data.raiddata[i].raidimage, data.raiddata[i].kommer, data.raiddata[i].kommentar, data.raiddata[i].id, 'false', data.raiddata[i].exraid, data.raiddata[i].location);
@@ -562,7 +608,7 @@
 		};
 		xmlhttp.open("GET", "raids.json", true);
 		xmlhttp.send();
-	}
+	};
 	function login(){
 		document.getElementById('registrera').setAttribute('style', 'display: none;');
 		var username = document.getElementById('namn').value;
@@ -623,7 +669,7 @@
 							};
 							var tabort = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
 								tabort.setAttribute('aria-hidden', 'true');
-								tabort.setAttribute('class', 'svg');
+								tabort.setAttribute('class', 'svg nooffline');
 								tabort.setAttribute('role', 'img');
 								tabort.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 								tabort.setAttribute('viewBox', '0 0 512 512');
@@ -638,7 +684,7 @@
 				body.appendChild(user);
 				var kommentar = document.createElement('p');
 					kommentar.setAttribute('onclick', 'edit("' + id + '", "' + username + '", "' + team + '", this);');
-					kommentar.setAttribute('class', 'posttext');
+					kommentar.setAttribute('class', 'posttext nooffline');
 					var kommentartext = document.createTextNode(raidtid + ' ' + raidkommentar)
 					kommentar.appendChild(kommentartext);
 				body.appendChild(kommentar);
@@ -666,7 +712,7 @@
 					var tabletr = document.createElement('tr');
 						var kommertd = document.createElement('td');
 							kommertd.setAttribute('onclick', 'kommer("' + id + '");');
-							kommertd.setAttribute('class', 'invert');
+							kommertd.setAttribute('class', 'invert nooffline');
 							var kommer = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
 								kommer.setAttribute('aria-hidden', 'true');
 								kommer.setAttribute('class', 'svg');
@@ -681,7 +727,7 @@
 						tabletr.appendChild(kommertd);
 						var kommerantaltd = document.createElement('td');
 							kommerantaltd.setAttribute('onclick', 'kommer("' + id + '");');
-							kommerantaltd.setAttribute('class', 'kommernummer invert');
+							kommerantaltd.setAttribute('class', 'kommernummer invert nooffline');
 							var kommerantal = document.createTextNode('(' + kommernummer.length + ')');
 							kommerantaltd.appendChild(kommerantal);
 						tabletr.appendChild(kommerantaltd);
@@ -705,7 +751,7 @@
 						tabletr.appendChild(kommentartd);
 						var kommentarantaltd = document.createElement('td');
 							kommentarantaltd.setAttribute('onclick', 'hideshowkomment("' + id + '");');
-							kommentarantaltd.setAttribute('class', 'kommentnummer invert');
+							kommentarantaltd.setAttribute('class', 'kommentnummer invert nooffline');
 							kommentarantaltd.setAttribute('data-num', kommentarer.length);
 							var kommerantal = document.createTextNode('(' + kommentarer.length + ')');
 							kommentarantaltd.appendChild(kommerantal);
@@ -727,7 +773,7 @@
 					var kommentsend = document.createElement('input');
 						kommentsend.setAttribute('type', 'button');
 						kommentsend.setAttribute('value', 'Skicka/Send');
-						kommentsend.setAttribute('class', 'kommentsend');
+						kommentsend.setAttribute('class', 'kommentsend nooffline');
 						kommentsend.setAttribute('onclick', 'skickakommentar("' + id + '")');
 					kommentarwrapper.appendChild(kommentsend);
 				body.appendChild(kommentarwrapper);
@@ -805,7 +851,7 @@
 		var wrapper = document.getElementById(id);
 			wrapper.parentElement.removeChild(wrapper);
 		if(document.getElementsByClassName('postbody').length == 0){
-			addnopost();
+			addinfo(config.nopost);
 		};
 	});
 	function edit(id, username, team, element){
@@ -864,8 +910,38 @@
 			textwrapper.appendChild(textelem);
 			textwrapper.removeAttribute('onclick')
 	};
+	function error(type, text){
+		var message = document.getElementById('message');
+			removechilds(message);
+			var text = document.createTextNode(text);
+			message.appendChild(text);
+			message.setAttribute('class', type + ' show');
+			setTimeout(function(){message.removeAttribute('class');}, 3000);
+	};
 	socket.on('disconnect', function () {
-		location.reload();
+		error('error', 'Du tappade kopplingen till servern.');
+		promptclose();
+		hideaddreaid();
+		var allnooffline = document.getElementsByClassName('nooffline');
+		for (var i = allnooffline.length - 1; i >= 0; i--) {
+			if(!allnooffline[i].getAttribute('onclick')){}else{
+				allnooffline[i].setAttribute('data-onclick', allnooffline[i].getAttribute('onclick'));
+				allnooffline[i].setAttribute('disabled', 'disabled');
+				allnooffline[i].removeAttribute('onclick');
+			};
+		};
+	});
+	socket.on('loadjson', function () {
+		getraids();
+		var allnooffline = document.getElementsByClassName('nooffline');
+		for (var i = allnooffline.length - 1; i >= 0; i--) {
+			if(!allnooffline[i].getAttribute('data-onclick')){}else{
+				allnooffline[i].setAttribute('onclick', allnooffline[i].getAttribute('data-onclick'));
+				allnooffline[i].removeAttribute('data-onclick');
+				allnooffline[i].removeAttribute('disabled');
+			};
+		};
+//nooffline
 	});
 </script>
 </body>
