@@ -15,8 +15,5 @@
     "Patientcentrerat"
   ],
   "author": "Mattias Lidbeck",
-  "license": "ISC",
-  "dependencies": {
-    "web-push": "^3.3.2"
-  }
+  "license": "ISC"
 }
