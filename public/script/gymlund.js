@@ -701,7 +701,7 @@ var gyms = [
 		"latitud": "13.1883550"
 	},
 	"embed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2248.0588977103134!2d13.186166315928707!3d55.705347980540715!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTXCsDQyJzE5LjMiTiAxM8KwMTEnMTguMSJF!5e0!3m2!1ssv!2sus!4v1507118936607",
-	"exraid": true,
+	"exraid": false,
 	"rip": false
 },{
 	"namn": "Environmental Engineering W",

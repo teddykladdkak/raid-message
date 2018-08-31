@@ -248,7 +248,7 @@
 	</div>
 	<span onclick="document.getElementById('debug').removeAttribute('style');">Debug</span>
 	<div id="debug" style="display: none;">
-		<canvas id="myCanvas" width="700" height="50" ></canvas>
+		<canvas id="myCanvas" width="700" height="60" ></canvas>
 		<textarea id="debugcode"></textarea>
 		<input type="button" value="Göm" onclick="document.getElementById('debug').setAttribute('style', 'display: none;');">
 	</div>
@@ -259,9 +259,11 @@
 <script type="text/javascript">
 	var config = {
 		imgdesaturate: 60, //0-255
-		confidence: 70 //0-100
+		confidence: 70, //0-100
+		sprak: 'swe'
 	}
 	function imgtotext(file){
+		if(!file){notimg();return false;}else if(file.type == 'image/png' || file.type == 'image/jpeg'){}else{notimg();return false;};
 		document.getElementById('raidimagepreview').setAttribute('class', 'loading');
 		var reader = new FileReader();
 			reader.readAsDataURL(file);
@@ -270,21 +272,16 @@
 				var context = canvas.getContext('2d');
 					context.clearRect(0, 0, canvas.width, canvas.height);
 				var imageObj = new Image();
-
 				imageObj.onload = function() {
 					context.drawImage(imageObj, -150, -80, 750, 1334);
 					var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 			        var data = imageData.data;
-
 			        var newColor = {r:255,g:255,b:255, a:255};
 			        for(var i = 0; i < data.length; i += 4) {
-			          // red
 			          data[i] = 255 - data[i];
-			          // green
 			          data[i + 1] = 255 - data[i + 1];
-			          // blue
 			          data[i + 2] = 255 - data[i + 2];
-			        }
+			        };
 					for (var i = 0, n = data.length; i <n; i += 4) {
 					    var r = data[i],
 					            g = data[i+1],
@@ -297,8 +294,7 @@
 					            data[i+2] = newColor.b;
 					            data[i+3] = newColor.a;
 					        };
-					}
-			        // overwrite original image
+					};
 			        context.putImageData(imageData, 0, 0);
 			        canvasToImg();
 				};
@@ -308,48 +304,74 @@
 				console.log('Error: ', error);
 			};
 	};
+	function notimg(){
+		var input = document.getElementById('raidimage')
+			input.setAttribute('style', 'border: solid 2px red;');
+			input.setAttribute('onclick', 'this.removeAttribute(\'style\');this.removeAttribute(\'onclick\');');
+			input.value = '';
+			document.getElementById('raidimagepreview').setAttribute('src', 'img/ingenbild.png');
+	};
 	console.log(gyms);
 	function canvasToImg() {
 		var canvas = document.getElementById("myCanvas");
 		var ctx=canvas.getContext("2d");
 		var url = canvas.toDataURL();
 		Tesseract.recognize(url, {
-		    lang: 'swe'
-		})
-		.then(function(result){
-			console.log(result)
+		    lang: config.sprak
+		}).catch(err => console.error(err)).then(function(result){
+			console.log(result);													//Ta bort när allt är stabilt
 			var excludegyms = gyms;
-			console.log(result.text)
+			var possible = [];
 			for (var i = result.words.length - 1; i >= 0; i--) {
-				console.log(result.words[i].confidence);
 				if(result.words[i].confidence >= config.confidence){
-					var possible = [];
 					for (var a = excludegyms.length - 1; a >= 0; a--) {
 						var check = excludegyms[a].namn.toLowerCase().includes(result.words[i].text.toLowerCase());
 						if(check){
-							possible.push(excludegyms[a]);
+							if(possible.includes(excludegyms[a])){
+								var pos = possible.indexOf(excludegyms[a]);
+								possible[pos].confidence = (possible[pos].confidence + result.words[i].confidence) / 2;
+							}else{
+								excludegyms[a].confidence = result.words[i].confidence;
+								possible.push(excludegyms[a]);
+							};
 						};
-					}
-					if(possible.length == 0){
-						var excludegyms = possible;
 					};
-				}
-			}
-			if(excludegyms.length == 1){
-				var postbutton = document.getElementsByClassName('postbutton ')[0];
-					postbutton.setAttribute('data-exraid', excludegyms[0].exraid);
-					postbutton.setAttribute('data-latitud', excludegyms[0].location.latitud);
-					postbutton.setAttribute('data-longitud', excludegyms[0].location.longitud);
+				};
 			};
-			/*Debugg*/
-			console.log(excludegyms);
+			if(possible.length == 1){
+				var winnerconf = possible[0].confidence;
+				var winnerarray = possible[0];
+				var debugconf = possible[0].confidence;							//Ta bort när allt är stabilt
+			}else if(possible.length == 0){
+				var winnerconf = 0;
+				var winnerarray = '';
+				var debugconf = 0;												//Ta bort när allt är stabilt
+			}else{
+				var winnerconf = 0;
+				var winnerarray = '';
+				var debugconf = 0;												//Ta bort när allt är stabilt
+				for (var i = possible.length - 1; i >= 0; i--) {
+					if(winnerconf <= possible[i].confidence){
+						debugconf = (debugconf + possible[i].confidence) / 2;	//Ta bort när allt är stabilt
+						winnerconf = possible[i].confidence;
+						var winnerarray = possible[i];
+					};
+				};
+			};
+			if(winnerarray == ''){}else{
+				var postbutton = document.getElementsByClassName('postbutton ')[0];
+					postbutton.setAttribute('data-exraid', winnerarray.exraid);
+					postbutton.setAttribute('data-latitud', winnerarray.location.latitud);
+					postbutton.setAttribute('data-longitud', winnerarray.location.longitud);
+			};
+			/*Ta bort när allt är stabilt*/
 			var debugtext = [];
-			for (var i = excludegyms.length - 1; i >= 0; i--) {
-				debugtext.push(excludegyms[i].namn)
-			}
-			document.getElementById('debugcode').value = excludegyms.length + ' st = ' + debugtext.join(', ');
+			for (var i = possible.length - 1; i >= 0; i--) {
+				debugtext.push(possible[i].namn)
+			};
+			document.getElementById('debugcode').value = 'Winner: "' + winnerarray.namn + '". Before selecting winner: ' + possible.length + ' st. Confidence over all: ' + debugconf + ', and winners confidence: ' + winnerconf + ' ["' + debugtext.join('", "') + '"]';
 			document.getElementById('raidimagepreview').removeAttribute('class');
-			/*Debugg slut*/
+			/*Ta bort när allt är stabilt slut*/
 		})
     };
 	function promptopen(message, inputtodo, func, active, back, data){
@@ -394,6 +416,7 @@
 		};
 	};
 	function makesmallimg(file){
+		if(!file){notimg();return false;}else if(file.type == 'image/png' || file.type == 'image/jpeg'){}else{notimg();return false;};
 		document.getElementById('raidimagepreview').src = 'img/laddar.png';
 	    var mpImg = new MegaPixImage(file);
 	    var resImg = document.getElementById('raidimagepreview');
