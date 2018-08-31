@@ -333,6 +333,7 @@
 		<canvas id="myCanvas" width="700" height="60" ></canvas>
 		<textarea id="debugcode"></textarea>
 		<input type="button" value="Göm" onclick="document.getElementById('debug').setAttribute('style', 'display: none;');">
+		<input type="button" value="notifikation" id="doIt">
 	</div>
 <script src="socket.io/socket.io.js"></script>
 <script src="script/megapix-image.js"></script>
@@ -951,8 +952,54 @@
 				allnooffline[i].removeAttribute('disabled');
 			};
 		};
-//nooffline
 	});
+
+
+	navigator.serviceWorker.register('script/service-worker.js');
+
+navigator.serviceWorker.ready
+.then(function(registration) {
+  return registration.pushManager.getSubscription()
+  .then(async function(subscription) {
+    if (subscription) {
+      return subscription;
+    }
+    const response = await fetch('./vapidPublicKey');
+    const vapidPublicKey = await response.text();
+    const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+    return registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: convertedVapidKey
+    });
+  });
+}).then(function(subscription) {
+  fetch('./register', {
+    method: 'post',
+    headers: {
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      subscription: subscription
+    }),
+  });
+
+  document.getElementById('doIt').onclick = function() {
+    const delay = 0;
+    const ttl = 1;
+    fetch('./sendNotification', {
+      method: 'post',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        subscription: subscription,
+        delay: delay,
+        ttl: ttl,
+      }),
+    });
+  };
+
+});
 </script>
 </body>
 </html>
