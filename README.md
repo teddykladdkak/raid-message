@@ -13,7 +13,6 @@ All raids are saved in the file "public/raids.js", this file is created automati
 Specific IP port is change in variable "config" in "/index.js".
 
 ## Todo
-* Better handling of broken contact with the server (Create a class that shows to the user that the button is disabled).
 * Clean "raids.json" at the days end.
 * Allows users to see who said they are coming.
 * Push notifications (probably only android and computer due to iOS do not support this at this time).
@@ -32,3 +31,5 @@ Specific IP port is change in variable "config" in "/index.js".
 * 31/8 ~~Loading icon when image is processed and analyzed.~~
 * 31/8 ~~Add ex-raid icon.~~
 * 31/8 ~~Link to google maps if location exist.~~
+* 31/8 ~~Better handling of broken contact with the server (Create a class that shows to the user that the button is disabled).~~
+* 31/8 ~~Users who choose anonymous are now assigned a Pokémon name.~~

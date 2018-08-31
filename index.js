@@ -13,7 +13,8 @@ function getDate(dateannan, timeannan, milisecsave){
 
 var config = {
 	"public": __dirname + '/public',
-	"port": 9999
+	"port": 9999,
+	"anonym": 'Anonym '
 };
 
 //Kollar IP adress för server.
@@ -112,16 +113,32 @@ function loadpage(filePath, extname, response, contentType){
 		}
 	});
 };
-
+var allpokemon = JSON.parse(fs.readFileSync(__dirname + '/public/script/pokenames.json', 'utf8')).allpokemon;
+function anonymtagger(){
+	if(allpokemon.length === 0){
+		allpokemon = JSON.parse(fs.readFileSync(__dirname + '/public/script/pokenames.json', 'utf8')).allpokemon;
+	}
+	var i = Math.floor(Math.random() * allpokemon.length);
+	var name = allpokemon[i];
+	allpokemon.splice(i, 1);
+	return config.anonym + ' ' + name;
+};
 // Loading socket.io
 var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket, username) {
 	socket.emit('loadjson', '?');
 	socket.on('login', function (data){
 		var datajson = JSON.parse(data);
-		socket.username = datajson.username;
+		if(datajson.username == 'anonym'){
+			datajson.username = anonymtagger();
+			socket.username = datajson.username;
+			var anonym = 'true';
+		}else{
+			socket.username = datajson.username;
+			var anonym = 'false';
+		};
 		socket.team = datajson.team;
-		socket.emit('sendinfo', {"userinfo": datajson});
+		socket.emit('sendinfo', {"userinfo": datajson, "anonym": anonym});
 	});
 	socket.on('postraid', function (data){
 		data.username = socket.username;

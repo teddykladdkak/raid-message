@@ -260,6 +260,9 @@
 			background-color: green;
 			color: white;
 		}
+		.disabled {
+			opacity: 0.5;
+		}
 	</style>
 </head>
 <body onload="load();">
@@ -613,7 +616,7 @@
 		document.getElementById('registrera').setAttribute('style', 'display: none;');
 		var username = document.getElementById('namn').value;
 		if(username == ''){
-			var username = 'Anonym';
+			var username = 'anonym';
 		};
 		var allteam = document.getElementById('teamwrapper').getElementsByTagName('td');
 		for (var i = allteam.length - 1; i >= 0; i--) {
@@ -625,8 +628,13 @@
 		socket.emit('login', '{"username": "' + username + '", "team": "' + team + '"}');
 	};
 	socket.on('sendinfo', function (data) {
+		console.log(data.anonym);
+		if(data.anonym == 'true'){
+			localStorage.setItem('userdata', '{"username": "' + data.userinfo.username + '", "team": "' + data.userinfo.team + '"}');
+		};
 		document.getElementById('wrapper').removeAttribute('style');
 		var userwrapper = document.getElementById('anvandarnamn');
+			removechilds(userwrapper);
 			userwrapper.appendChild(document.createTextNode(data.userinfo.username));
 		document.getElementById('meny').setAttribute('class', data.userinfo.team + 'bg');
 	});
@@ -927,6 +935,7 @@
 			if(!allnooffline[i].getAttribute('onclick')){}else{
 				allnooffline[i].setAttribute('data-onclick', allnooffline[i].getAttribute('onclick'));
 				allnooffline[i].setAttribute('disabled', 'disabled');
+				allnooffline[i].setAttribute('class', allnooffline[i].getAttribute('class') + ' disabled');
 				allnooffline[i].removeAttribute('onclick');
 			};
 		};
@@ -937,6 +946,7 @@
 		for (var i = allnooffline.length - 1; i >= 0; i--) {
 			if(!allnooffline[i].getAttribute('data-onclick')){}else{
 				allnooffline[i].setAttribute('onclick', allnooffline[i].getAttribute('data-onclick'));
+				allnooffline[i].setAttribute('class', allnooffline[i].getAttribute('class').replace(' disabled', ''));
 				allnooffline[i].removeAttribute('data-onclick');
 				allnooffline[i].removeAttribute('disabled');
 			};
