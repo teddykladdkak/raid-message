@@ -248,7 +248,7 @@
 	</div>
 	<span onclick="document.getElementById('debug').removeAttribute('style');">Debug</span>
 	<div id="debug" style="display: none;">
-		<canvas id="myCanvas" width="578" height="200" ></canvas>
+		<canvas id="myCanvas" width="700" height="50" ></canvas>
 		<textarea id="debugcode"></textarea>
 		<input type="button" value="Göm" onclick="document.getElementById('debug').setAttribute('style', 'display: none;');">
 	</div>
@@ -258,8 +258,8 @@
 <script src="script/gymlund.js" type="text/javascript"></script>
 <script type="text/javascript">
 	var config = {
-		imgdesaturate: 50, //0-255
-		confidence: 80 //0-100
+		imgdesaturate: 60, //0-255
+		confidence: 70 //0-100
 	}
 	function imgtotext(file){
 		document.getElementById('raidimagepreview').setAttribute('class', 'loading');
@@ -272,19 +272,8 @@
 				var imageObj = new Image();
 
 				imageObj.onload = function() {
-					// draw cropped image
-					var sourceX = 150;
-					var sourceY = 50;
-					var sourceWidth = 500;
-					var sourceHeight = 100;
-					var destWidth = sourceWidth;
-					var destHeight = sourceHeight;
-					var destX = canvas.width / 2 - destWidth / 2;
-					var destY = canvas.height / 2 - destHeight / 2;
-
-					context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
-
-					var imageData = context.getImageData(0, 0, imageObj.width, imageObj.height);
+					context.drawImage(imageObj, -150, -80, 750, 1334);
+					var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 			        var data = imageData.data;
 
 			        var newColor = {r:255,g:255,b:255, a:255};
@@ -328,7 +317,7 @@
 		    lang: 'swe'
 		})
 		.then(function(result){
-			//console.log(result)
+			console.log(result)
 			var excludegyms = gyms;
 			console.log(result.text)
 			for (var i = result.words.length - 1; i >= 0; i--) {
@@ -341,7 +330,9 @@
 							possible.push(excludegyms[a]);
 						};
 					}
-					var excludegyms = possible;
+					if(possible.length == 0){
+						var excludegyms = possible;
+					};
 				}
 			}
 			if(excludegyms.length == 1){
