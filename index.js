@@ -48,16 +48,12 @@ if (fs.existsSync(__dirname + '/admin.json')) {
 		console.log('Lösenord inställt! Kan ändras i "admin.json"');
 	});
 };
-
 if (fs.existsSync(__dirname + '/public/raids.json')) {
 	var dataraids = JSON.parse(fs.readFileSync(__dirname + '/public/raids.json', 'utf8')).raiddata;
 }else{
 	fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": []}, null, ' '));
 	var dataraids = [];
 };
-
-
-//Key maker or gatherer
 if (fs.existsSync(__dirname + '/notificationPrivateKey.json')) {
 	var privateKey = JSON.parse(fs.readFileSync(__dirname + config.privatekey + '.json', 'utf8'));
 	eval(fs.readFileSync(__dirname + config.publickey + '.js')+'');
@@ -70,24 +66,10 @@ if (fs.existsSync(__dirname + '/notificationPrivateKey.json')) {
 	console.log('New keys for notifications!\nPrivateKey: "' + __dirname + config.privatekey + '.json"\nPublicKey: "' + __dirname + config.publickey + '.js"');
 };
 
-
-//Uppstart av alla pamparna! :D
-//var app = require('express')();
 const app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-//var io = require('socket.io').listen(app);
 
-
-
-
-
-
-
-
-
-//NOTIFIKAITONER
-//Ändrar så text bara är 30 tacken lång (Pga begränsningar i webbläsare)
 function maxthirty(text){
 	var tosend = '';
 	for (var i = 0; i < text.length; i++){
@@ -99,65 +81,38 @@ function maxthirty(text){
 	};
 	return tosend;
 };
-//Letar efter subscribers
-
-var subscribers = [];
-function sendnotification(data){
-	// Create payload
-
-
-//////////////////////////////////////////////////////
-//Ändra storlek på bild!!!!!!!!!!!!!!
-//Croppa även så man bara ser mitten av bilden, ägget eller pokemonen
-//////////////////////////////////////////////////////
-	console.log(data.icon)
-	var notiText = data.raidtid + ': ' + data.raidkommentar;
-	console.log(data.raidkommentar);
-  const payload = JSON.stringify({ title: maxthirty(data.gymnamn), text: maxthirty(notiText), icon: data.icon});
-  for (var i = subscribers.length - 1; i >= 0; i--) {
-    // Pass object into sendNotification
-    webpush
-    .sendNotification(subscribers[i].subscription, payload)
-    .catch(err => console.error(err));
-  };
+if (fs.existsSync(__dirname + '/subscribers.json')) {
+	var subscribers = JSON.parse(fs.readFileSync(__dirname + '/subscribers.json', 'utf8')).data;
+}else{
+	fs.writeFileSync(__dirname + '/subscribers.json', JSON.stringify({"data": []}, null, ' '));
+	var subscribers = [];
 };
-
-
-/*app.get('/test*', function(req, res) {
-	sendnotification(data);
-});*/
-
-
+function sendnotification(data){
+	var notiText = data.raidtid + ': ' + data.raidkommentar;
+	const payload = JSON.stringify({ title: maxthirty(data.gymnamn), text: maxthirty(notiText), icon: data.icon});
+	for (var i = subscribers.length - 1; i >= 0; i--) {
+		webpush
+			.sendNotification(subscribers[i].subscription, payload)
+			.catch(err => console.error(err));
+	};
+};
 app.use(bodyParser.json());
 webpush.setVapidDetails(
-  "https://www.raidlund.tk/",
-  publicKey,
-  privateKey
+	"https://www.raidlund.tk/",
+	publicKey,
+	privateKey
 );
-// Subscribe Route
 app.post("/subscribe", (req, res) => {
-  // Get pushSubscription object
-  subscribers.push(req.body);
-  // Send 201 - resource created
-  res.status(201).json({});
+	var data = req.body;
+	var todo = 'true';
+	for (var i = subscribers.length - 1; i >= 0; i--) {if(subscribers[i].subscription.keys.p256dh == data.subscription.keys.p256dh){var todo = 'false';};};
+	if(todo == 'true'){
+		subscribers.push(data);
+		fs.writeFileSync(__dirname + '/subscribers.json', JSON.stringify({"data": subscribers}, null, ' '));
+	};
+	res.status(201).json({});
 });
-
-//app.get(['/', '/index.html'], function (req, res) {
-
-
-//});
-
-// Set static path
 app.use(express.static(path.join(__dirname, "public")));
-
-
-
-
-
-
-
-
-
 
 function randomString(length){
 	var text = "";
@@ -199,7 +154,6 @@ function anonymtagger(){
 	return config.anonym + ' ' + name;
 };
 
-// Loading socket.io
 io.sockets.on('connection', function (socket, username) {
 	socket.emit('loadjson', '?');
 	socket.on('login', function (data){
@@ -322,6 +276,4 @@ io.sockets.on('connection', function (socket, username) {
 		};
 	});
 });
-
-//app.listen(config.port, () => console.log(`Server started on port ${config.port}`));
 server.listen(config.port);

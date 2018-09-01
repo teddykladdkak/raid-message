@@ -15,7 +15,6 @@ Specific IP port is change in variable "config" in "/index.js".
 ## Todo
 * Clean "raids.json" at the days end.
 * Allows users to see who said they are coming.
-* Push notifications (probably only android and computer due to iOS do not support this at this time).
 * Test and debug image to text.
 * Load all files from server.. (After debug)
 * Make setting for users to only show gyms in a specific area.
@@ -33,3 +32,4 @@ Specific IP port is change in variable "config" in "/index.js".
 * 31/8 ~~Link to google maps if location exist.~~
 * 31/8 ~~Better handling of broken contact with the server (Create a class that shows to the user that the button is disabled).~~
 * 31/8 ~~Users who choose anonymous are now assigned a Pokémon name.~~
+* 1/9 ~~Push notifications (probably only android and computer due to iOS do not support this at this time).~~
