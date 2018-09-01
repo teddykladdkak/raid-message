@@ -47,6 +47,7 @@ node .
 9. Use one of the links as shown
 
 ## Todo
+* Disable notifications.
 * Clean "raids.json" at the days end.
 * Allows users to see who said they are coming.
 * Test and debug image to text.
