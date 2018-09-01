@@ -1,6 +1,8 @@
-var http = require('http');
+const express = require("express");
+const webpush = require("web-push");
+const bodyParser = require("body-parser");
+const path = require("path");
 var fs = require('fs');
-var path = require('path');
 const makeDir = require('make-dir');
 var prompt = require('prompt');
 
@@ -14,7 +16,9 @@ function getDate(dateannan, timeannan, milisecsave){
 var config = {
 	"public": __dirname + '/public',
 	"port": 9999,
-	"anonym": 'Anonym '
+	"anonym": 'Anonym ',
+	"privatekey": '/notificationPrivateKey',
+	"publickey": '/public/script/notificationPublicKey'
 };
 
 //Kollar IP adress för server.
@@ -52,38 +56,109 @@ if (fs.existsSync(__dirname + '/public/raids.json')) {
 	var dataraids = [];
 };
 
-//Startar server och tillåtna filer
-var server = http.createServer(function (request, response) {
-	var filePath = '.' + request.url;
-	if (filePath == './') {filePath = './index.html';};
-	//Här radas alla tillåtna filer
-	var extname = path.extname(filePath);
-	var contentType = 'text/html';
-	switch (extname) {
-		case '.js':
-			contentType = 'text/javascript';
-			break;
-		case '.css':
-			contentType = 'text/css';
-			break;
-		case '.json':
-			contentType = 'application/json';
-			break;
-		case '.png':
-			contentType = 'image/png';
-			break;	  
-		case '.jpg':
-			contentType = 'image/jpg';
-			break;
-		case '.ico':
-			contentType = 'image/x-icon';
-			break;
-		case '.wav':
-			contentType = 'audio/wav';
-			break;
+
+//Key maker or gatherer
+if (fs.existsSync(__dirname + '/notificationPrivateKey.json')) {
+	var privateKey = JSON.parse(fs.readFileSync(__dirname + config.privatekey + '.json', 'utf8'));
+	eval(fs.readFileSync(__dirname + config.publickey + '.js')+'');
+}else{
+	const vapidKeys = webpush.generateVAPIDKeys();
+	fs.writeFileSync(__dirname + config.privatekey + '.json', JSON.stringify(vapidKeys.privateKey, null, ' '));
+	fs.writeFileSync(__dirname + config.publickey + '.js', 'var publicKey = "' + vapidKeys.publicKey + '";');
+	var publicKey = vapidKeys.publicKey;
+	var privateKey = vapidKeys.privateKey;
+	console.log('New keys for notifications!\nPrivateKey: "' + __dirname + config.privatekey + '.json"\nPublicKey: "' + __dirname + config.publickey + '.js"');
+};
+
+
+//Uppstart av alla pamparna! :D
+//var app = require('express')();
+const app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+//var io = require('socket.io').listen(app);
+
+
+
+
+
+
+
+
+
+//NOTIFIKAITONER
+//Ändrar så text bara är 30 tacken lång (Pga begränsningar i webbläsare)
+function maxthirty(text){
+	var tosend = '';
+	for (var i = 0; i < text.length; i++){
+		var tosend = tosend + text[i]
+		if(i == 26){
+			var tosend = tosend + '...';
+			var i = 99999999999999;
+		};
 	};
-	loadpage(filePath, extname, response, contentType);
+	return tosend;
+};
+//Letar efter subscribers
+
+var subscribers = [];
+function sendnotification(data){
+	// Create payload
+
+
+//////////////////////////////////////////////////////
+//Ändra storlek på bild!!!!!!!!!!!!!!
+//Croppa även så man bara ser mitten av bilden, ägget eller pokemonen
+//////////////////////////////////////////////////////
+	console.log(data.icon)
+	var notiText = data.raidtid + ': ' + data.raidkommentar;
+	console.log(data.raidkommentar);
+  const payload = JSON.stringify({ title: maxthirty(data.gymnamn), text: maxthirty(notiText), icon: data.icon});
+  for (var i = subscribers.length - 1; i >= 0; i--) {
+    // Pass object into sendNotification
+    webpush
+    .sendNotification(subscribers[i].subscription, payload)
+    .catch(err => console.error(err));
+  };
+};
+
+
+/*app.get('/test*', function(req, res) {
+	sendnotification(data);
+});*/
+
+
+app.use(bodyParser.json());
+webpush.setVapidDetails(
+  "https://www.raidlund.tk/",
+  publicKey,
+  privateKey
+);
+// Subscribe Route
+app.post("/subscribe", (req, res) => {
+  // Get pushSubscription object
+  subscribers.push(req.body);
+  // Send 201 - resource created
+  res.status(201).json({});
 });
+
+//app.get(['/', '/index.html'], function (req, res) {
+
+
+//});
+
+// Set static path
+app.use(express.static(path.join(__dirname, "public")));
+
+
+
+
+
+
+
+
+
+
 function randomString(length){
 	var text = "";
 	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -123,8 +198,8 @@ function anonymtagger(){
 	allpokemon.splice(i, 1);
 	return config.anonym + ' ' + name;
 };
+
 // Loading socket.io
-var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket, username) {
 	socket.emit('loadjson', '?');
 	socket.on('login', function (data){
@@ -147,11 +222,12 @@ io.sockets.on('connection', function (socket, username) {
 		data.kommentar = [];
 		data.id = randomString(10);
 		data.exraid = data.exraid;
-		data.location = data.location;
+		//data.location = data.location;
 		dataraids.push(data);
 		fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
 		socket.emit('nyraid', data);
 		socket.broadcast.emit('nyraid', data);
+		sendnotification(data);
 	});
 	socket.on('addkomment', function (data){
 		data.time = getDate().tid;
@@ -246,4 +322,6 @@ io.sockets.on('connection', function (socket, username) {
 		};
 	});
 });
+
+//app.listen(config.port, () => console.log(`Server started on port ${config.port}`));
 server.listen(config.port);

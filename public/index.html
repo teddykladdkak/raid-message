@@ -23,6 +23,9 @@
 	<link rel="apple-touch-icon-precomposed" sizes="76x76" href="ico/icon76x76.png">
 	<link rel="apple-touch-icon-precomposed" sizes="120x120" href="ico/icon120x120.png">
 	<link rel="apple-touch-icon-precomposed" sizes="152x152" href="ico/icon152x152.png">
+
+	<script src="script/notificationPublicKey.js" type="text/javascript"></script>
+
 	<style type="text/css">
 		body, html, table, tr, td {
 			margin: 0px;
@@ -307,7 +310,7 @@
 		</div>
 		<div id="addraid" style="display: none;">
 			<p>Skärmdump</p>
-			<input type="file" id="raidimage" onchange="makesmallimg(this.files[0]);imgtotext(this.files[0]);"><br/>
+			<input type="file" id="raidimage" onchange="makesmallimg(this.files[0]);makeicon(this.files[0]);imgtotext(this.files[0]);"><br/>
 			<div class="center"><div class="wrapperraidimagepreview"><img src="img/ingenbild.png" id="raidimagepreview"></div></div>
 			<p>Föreslagen tid</p>
 			<input type="time" id="raidtid">
@@ -330,11 +333,13 @@
 	</div>
 	<span onclick="document.getElementById('debug').removeAttribute('style');">Debug</span>
 	<div id="debug" style="display: none;">
+		<canvas id="iconCanvas" width="75" height="75" ></canvas>
 		<canvas id="myCanvas" width="700" height="60" ></canvas>
 		<textarea id="debugcode"></textarea>
 		<input type="button" value="Göm" onclick="document.getElementById('debug').setAttribute('style', 'display: none;');">
 	</div>
 <script src="socket.io/socket.io.js"></script>
+<script src="script/client.js"></script>
 <script src="script/megapix-image.js"></script>
 <script src='https://cdn.rawgit.com/naptha/tesseract.js/1.0.10/dist/tesseract.js'></script>
 <script src="script/gymlund.js" type="text/javascript"></script>
@@ -346,13 +351,35 @@
 		nopost: 'Inga raider reggade ännu idag.. Blir du den första?',
 		loadjson: 'Du har varit bortkopplad från server, raid laddas om.'
 	}
+	function makeicon(file){
+		var canvasid = 'iconCanvas';
+		if(!file){notimg();return false;}else if(file.type == 'image/png' || file.type == 'image/jpeg'){}else{notimg();return false;};
+		var reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = function () {
+				var canvas = document.getElementById(canvasid);
+				var context = canvas.getContext('2d');
+					context.clearRect(0, 0, canvas.width, canvas.height);
+				var imageObj = new Image();
+				imageObj.onload = function() {
+					context.drawImage(imageObj, -14.6, -38.4, 104.2, 142.6);
+					var url = canvas.toDataURL('image/jpeg', 0.1);
+					document.getElementsByClassName('postbutton')[0].setAttribute('data-icon', url);
+				};
+				imageObj.src = reader.result;
+			};
+			reader.onerror = function (error) {
+				console.log('Error: ', error);
+			};
+	};
 	function imgtotext(file){
+		var canvasid = 'myCanvas';
 		if(!file){notimg();return false;}else if(file.type == 'image/png' || file.type == 'image/jpeg'){}else{notimg();return false;};
 		document.getElementById('raidimagepreview').setAttribute('class', 'loading');
 		var reader = new FileReader();
 			reader.readAsDataURL(file);
 			reader.onload = function () {
-				var canvas = document.getElementById('myCanvas');
+				var canvas = document.getElementById(canvasid);
 				var context = canvas.getContext('2d');
 					context.clearRect(0, 0, canvas.width, canvas.height);
 				var imageObj = new Image();
@@ -380,7 +407,7 @@
 					        };
 					};
 			        context.putImageData(imageData, 0, 0);
-			        canvasToImg();
+			        canvasToImg(canvasid);
 				};
 				imageObj.src = reader.result;
 			};
@@ -395,8 +422,8 @@
 			input.value = '';
 			document.getElementById('raidimagepreview').setAttribute('src', 'img/ingenbild.png');
 	};
-	function canvasToImg() {
-		var canvas = document.getElementById("myCanvas");
+	function canvasToImg(id) {
+		var canvas = document.getElementById(id);
 		var ctx=canvas.getContext("2d");
 		var url = canvas.toDataURL();
 		Tesseract.recognize(url, {
@@ -443,6 +470,7 @@
 			};
 			if(winnerarray == ''){}else{
 				var postbutton = document.getElementsByClassName('postbutton ')[0];
+					postbutton.setAttribute('data-namn', winnerarray.namn);
 					postbutton.setAttribute('data-exraid', winnerarray.exraid);
 					postbutton.setAttribute('data-latitud', winnerarray.location.latitud);
 					postbutton.setAttribute('data-longitud', winnerarray.location.longitud);
@@ -555,11 +583,19 @@
 		if(!postbutton.getAttribute('data-exraid')){}else{
 			var exraid = postbutton.getAttribute('data-exraid');
 		};
+		var gymnamn = '';
+		if(!postbutton.getAttribute('data-exraid')){}else{
+			var gymnamn = postbutton.getAttribute('data-namn');
+		};
+		var icon = '';
+		if(!postbutton.getAttribute('data-icon')){}else{
+			var icon = postbutton.getAttribute('data-icon');
+		};
 		var location = 'false';
 		if(!postbutton.getAttribute('data-longitud') && postbutton.getAttribute('data-latitud')){}else{
 			var location = {"longitud": postbutton.getAttribute('data-longitud'), "latitud": postbutton.getAttribute('data-latitud')};
 		};
-		socket.emit('postraid', {"raidimage": document.getElementById('raidimagepreview').src, "raidtid": document.getElementById('raidtid').value, raidkommentar: document.getElementById('raidkommentar').value, "exraid": exraid, "location": location});
+		socket.emit('postraid', {"raidimage": document.getElementById('raidimagepreview').src, "raidtid": document.getElementById('raidtid').value, raidkommentar: document.getElementById('raidkommentar').value, "exraid": exraid, "location": location, "gymnamn": gymnamn, "icon": icon});
 		hideaddreaid(document.getElementById('buttonlaggtillraid'));
 	};
 	function changeuser(){
@@ -576,13 +612,7 @@
 	var geturl = window.location.href.replace('http://', '').replace('https://', '').split('/')[0];
 	//Lyssnar om server säger något
 	var socket = io.connect(geturl);
-	// Berättar för användare ifall koppling till server försvinner
 	function load(){
-		if(!localStorage.getItem('userdata')){
-			document.getElementById('registrera').removeAttribute('style');
-		}else{
-			socket.emit('login', localStorage.getItem('userdata'));
-		};
 	};
 	function addinfo(message){
 		var wrapper = document.getElementById('posts');
@@ -926,6 +956,7 @@
 			message.setAttribute('class', type + ' show');
 			setTimeout(function(){message.removeAttribute('class');}, 3000);
 	};
+	var aterkopplad = 'false';
 	socket.on('disconnect', function () {
 		error('error', 'Du tappade kopplingen till servern.');
 		promptclose();
@@ -939,8 +970,18 @@
 				allnooffline[i].removeAttribute('onclick');
 			};
 		};
+		aterkopplad = 'true';
 	});
 	socket.on('loadjson', function () {
+		if(!localStorage.getItem('userdata')){
+			document.getElementById('registrera').removeAttribute('style');
+		}else{
+			if(aterkopplad == 'true'){
+				error('good', 'Du är kopplad till servern.');
+				aterkopplad = 'false';
+			};
+			socket.emit('login', localStorage.getItem('userdata'));
+		};
 		getraids();
 		var allnooffline = document.getElementsByClassName('nooffline');
 		for (var i = allnooffline.length - 1; i >= 0; i--) {
