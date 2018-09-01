@@ -1,4 +1,4 @@
-# raid-message ![alt text](https://raw.githubusercontent.com/teddykladdkak/raid-message/master/public/ico/icon48x48.png "Logo for Raid Message")
+# Raid Message ![alt text](https://raw.githubusercontent.com/teddykladdkak/raid-message/master/public/ico/icon48x48.png "Logo for Raid Message")
 ## What is this!
 This project aims to replace Facebook, Messenger, Discord, etc. in the pursuit of the next Raid in Pokémon Go. It is currently at the earliest stage of development.
 
@@ -44,9 +44,6 @@ npm i
 node .
 ```
 8. Choose and type admin password, enter to add.
-```
-prompt: adminlösenord:
-```
 9. Use one of the links as shown
 
 ## Todo
