@@ -19,6 +19,36 @@ Link | Stores
 "/notificationPrivateKey.json" | PrivateKey for the Web notification API.
 "/public/script/notificationPublicKey.js" | PublicKey for the Web notification API.
 
+## How to run
+1. Open Terminal or Command Prompt.
+2. If you havent already: Download and install "npm" and "Node.js".
+[https://nodejs.org/en/](https://nodejs.org/en/ "Install npm and Node.js")
+3. Go to folder where you want to download and install in.
+```
+cd [rootlink to folder]
+```
+4. Download respetory
+```
+git https://github.com/teddykladdkak/raid-message.git
+```
+5. Go into the "Raid Message" folder.
+```
+cd [rootlink to folder & "raid-message/"]
+```
+6. Uppdate all the code.
+```javascript
+npm i
+```
+7. Start the server.
+```javascript
+node .
+```
+8. Choose and type admin password, enter to add.
+```
+prompt: adminlösenord:
+```
+9. Use one of the links as shown
+
 ## Todo
 * Clean "raids.json" at the days end.
 * Allows users to see who said they are coming.
