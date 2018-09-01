@@ -1,4 +1,4 @@
-# raid-message
+# raid-message ![alt text](https://raw.githubusercontent.com/teddykladdkak/raid-message/master/public/ico/icon48x48.png "Logo for Raid Message")
 ## What is this!
 This project aims to replace Facebook, Messenger, Discord, etc. in the pursuit of the next Raid in Pokémon Go. It is currently at the earliest stage of development.
 
@@ -8,9 +8,16 @@ At the moment, it is very fine-tuned to work in the Lund area, but not a lot of 
 ## Good to know at the start
 When the server is started for the first time, you will be given the option to enter the password for the admins in the console. The password is then saved in root "/admin.json".
 
-All raids are saved in the file "public/raids.js", this file is created automatically when the server is started the first time.
-
 Specific IP port is change in variable "config" in "/index.js".
+
+### Files created at first launch of server
+Link | Stores
+--- | ---
+"/admin.json" | Password for admins.
+"/public/raids.json" | Registerd raids from the users.
+"/subscribers.json" | Users that have approved notifications.
+"/notificationPrivateKey.json" | PrivateKey for the Web notification API.
+"/public/script/notificationPublicKey.js" | PublicKey for the Web notification API.
 
 ## Todo
 * Clean "raids.json" at the days end.
