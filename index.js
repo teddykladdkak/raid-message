@@ -21,6 +21,10 @@ var config = {
 	"publickey": '/public/script/notificationPublicKey'
 };
 
+function rensaochsakra(vari){
+	return vari.replace(/[^A-Za-z0-9\s!?\u00C5\u00C4\u00D6\u00E5\u00E4\u00F6\u002D\u0028\u0029]/g,'');
+};
+
 //Kollar IP adress för server.
 function getIPAddress() {
 	var interfaces = require('os').networkInterfaces();
@@ -49,10 +53,10 @@ if (fs.existsSync(__dirname + '/admin.json')) {
 	});
 };
 if (fs.existsSync(__dirname + '/public/raids.json')) {
-	var dataraids = JSON.parse(fs.readFileSync(__dirname + '/public/raids.json', 'utf8')).raiddata;
+	var dataraids = JSON.parse(fs.readFileSync(__dirname + '/public/raids.json', 'utf8'));
 }else{
-	fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": []}, null, ' '));
-	var dataraids = [];
+	fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"date": getDate().datum, "raiddata": []}, null, ' '));
+	var dataraids = {"date": getDate().datum, "raiddata": []};
 };
 if (fs.existsSync(__dirname + '/notificationPrivateKey.json')) {
 	var privateKey = JSON.parse(fs.readFileSync(__dirname + config.privatekey + '.json', 'utf8'));
@@ -149,7 +153,7 @@ function anonymtagger(){
 		allpokemon = JSON.parse(fs.readFileSync(__dirname + '/public/script/pokenames.json', 'utf8')).allpokemon;
 	}
 	var i = Math.floor(Math.random() * allpokemon.length);
-	var name = allpokemon[i];
+	var name = rensaochsakra(allpokemon[i]);
 	allpokemon.splice(i, 1);
 	return config.anonym + ' ' + name;
 };
@@ -163,10 +167,10 @@ io.sockets.on('connection', function (socket, username) {
 			socket.username = datajson.username;
 			var anonym = 'true';
 		}else{
-			socket.username = datajson.username;
+			socket.username = rensaochsakra(datajson.username);
 			var anonym = 'false';
 		};
-		socket.team = datajson.team;
+		socket.team = rensaochsakra(datajson.team);
 		socket.emit('sendinfo', {"userinfo": datajson, "anonym": anonym});
 	});
 	socket.on('postraid', function (data){
@@ -175,22 +179,22 @@ io.sockets.on('connection', function (socket, username) {
 		data.kommer = [{"username": socket.username, "team": socket.team}];
 		data.kommentar = [];
 		data.id = randomString(10);
-		data.exraid = data.exraid;
-		//data.location = data.location;
-		dataraids.push(data);
-		fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
+		data.raidkommentar = rensaochsakra(data.raidkommentar);
+		dataraids.raiddata.push(data);
+		fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify(dataraids, null, ' '));
 		socket.emit('nyraid', data);
 		socket.broadcast.emit('nyraid', data);
 		sendnotification(data);
 	});
 	socket.on('addkomment', function (data){
+		data.kommentar = rensaochsakra(data.kommentar);
 		data.time = getDate().tid;
 		data.username = socket.username;
 		data.team = socket.team;
-		for (var i = dataraids.length - 1; i >= 0; i--) {
-			if(dataraids[i].id == data.id){
-				dataraids[i].kommentar.push(data);
-				fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
+		for (var i = dataraids.raiddata.length - 1; i >= 0; i--) {
+			if(dataraids.raiddata[i].id == data.id){
+				dataraids.raiddata[i].kommentar.push(data);
+				fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify(dataraids, null, ' '));
 				socket.emit('nykommentar', data);
 				socket.broadcast.emit('nykommentar', data);
 				break;
@@ -198,23 +202,23 @@ io.sockets.on('connection', function (socket, username) {
 		};
 	});
 	socket.on('addkommer', function (id){
-		for (var i = dataraids.length - 1; i >= 0; i--) {
-			if(dataraids[i].id == id){
-				dataraids[i].kommer.push({"username": socket.username, "team": socket.team});
-				fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
-				socket.emit('nykommer', {"id": id, "data": dataraids[i].kommer});
-				socket.broadcast.emit('nykommer', {"id": id, "data": dataraids[i].kommer});
+		for (var i = dataraids.raiddata.length - 1; i >= 0; i--) {
+			if(dataraids.raiddata[i].id == id){
+				dataraids.raiddata[i].kommer.push({"username": socket.username, "team": socket.team});
+				fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify(dataraids, null, ' '));
+				socket.emit('nykommer', {"id": id, "data": dataraids.raiddata[i].kommer});
+				socket.broadcast.emit('nykommer', {"id": id, "data": dataraids.raiddata[i].kommer});
 				break;
 			};
 		};
 	});
 	socket.on('remove', function (data){
 		if(data.losen == 'false'){
-			for (var i = dataraids.length - 1; i >= 0; i--) {
-				if(dataraids[i].id == data.id){
-					if(dataraids[i].username == socket.username && dataraids[i].team == socket.team){
-						dataraids.splice(i, 1);
-						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
+			for (var i = dataraids.raiddata.length - 1; i >= 0; i--) {
+				if(dataraids.raiddata[i].id == data.id){
+					if(dataraids.raiddata[i].username == socket.username && dataraids.raiddata[i].team == socket.team){
+						dataraids.raiddata.splice(i, 1);
+						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify(dataraids, null, ' '));
 						socket.emit('remove', data.id);
 						socket.broadcast.emit('remove', data.id);
 						break;
@@ -223,10 +227,10 @@ io.sockets.on('connection', function (socket, username) {
 			};
 		}else{
 			if(admin.password == data.losen){
-				for (var i = dataraids.length - 1; i >= 0; i--) {
-					if(dataraids[i].id == data.id){
-						dataraids.splice(i, 1);
-						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
+				for (var i = dataraids.raiddata.length - 1; i >= 0; i--) {
+					if(dataraids.raiddata[i].id == data.id){
+						dataraids.raiddata.splice(i, 1);
+						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify(dataraids, null, ' '));
 						socket.emit('remove', data.id);
 						socket.broadcast.emit('remove', data.id);
 						break;
@@ -238,12 +242,12 @@ io.sockets.on('connection', function (socket, username) {
 	socket.on('edittext', function (data){
 		if(data.admin == 'true'){
 			if(socket.admin == 'true'){
-				for (var i = dataraids.length - 1; i >= 0; i--) {
-					if(dataraids[i].id == data.id){
-						dataraids[i].raidtid = data.time;
-						dataraids[i].raidkommentar = data.text;
-						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
-						var tosend = {"id": dataraids[i].id, "username": dataraids[i].username, "team": dataraids[i].team, "time": dataraids[i].raidtid, "text": dataraids[i].raidkommentar};
+				for (var i = dataraids.raiddata.length - 1; i >= 0; i--) {
+					if(dataraids.raiddata[i].id == data.id){
+						dataraids.raiddata[i].raidtid = data.time;
+						dataraids.raiddata[i].raidkommentar = rensaochsakra(data.text);
+						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify(dataraids, null, ' '));
+						var tosend = {"id": dataraids.raiddata[i].id, "username": dataraids.raiddata[i].username, "team": dataraids.raiddata[i].team, "time": dataraids.raiddata[i].raidtid, "text": rensaochsakra(dataraids.raiddata[i].raidkommentar)};
 						socket.emit('edittext', tosend);
 						socket.broadcast.emit('edittext', tosend);
 						break;
@@ -251,13 +255,13 @@ io.sockets.on('connection', function (socket, username) {
 				};
 			};
 		}else{
-			for (var i = dataraids.length - 1; i >= 0; i--) {
-				if(dataraids[i].id == data.id){
-					if(dataraids[i].username == socket.username && dataraids[i].team == socket.team){
-						dataraids[i].raidtid = data.time;
-						dataraids[i].raidkommentar = data.text;
-						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"raiddata": dataraids}, null, ' '));
-						var tosend = {"id": dataraids[i].id, "username": dataraids[i].username, "team": dataraids[i].team, "time": dataraids[i].raidtid, "text": dataraids[i].raidkommentar};
+			for (var i = dataraids.raiddata.length - 1; i >= 0; i--) {
+				if(dataraids.raiddata[i].id == data.id){
+					if(dataraids.raiddata[i].username == socket.username && dataraids.raiddata[i].team == socket.team){
+						dataraids.raiddata[i].raidtid = data.time;
+						dataraids.raiddata[i].raidkommentar = rensaochsakra(data.text);
+						fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify(dataraids, null, ' '));
+						var tosend = {"id": dataraids.raiddata[i].id, "username": dataraids.raiddata[i].username, "team": dataraids.raiddata[i].team, "time": dataraids.raiddata[i].raidtid, "text": rensaochsakra(dataraids.raiddata[i].raidkommentar)};
 						socket.emit('edittext', tosend);
 						socket.broadcast.emit('edittext', tosend);
 						break;
