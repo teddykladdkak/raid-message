@@ -160,6 +160,14 @@ function anonymtagger(){
 
 io.sockets.on('connection', function (socket, username) {
 	socket.emit('loadjson', '?');
+	setInterval(function(){
+		if(dataraids.date == getDate().datum){}else{
+			fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"date": getDate().datum, "raiddata": []}, null, ' '));
+			dataraids = {"date": getDate().datum, "raiddata": []};
+			console.log('Nytt datum, "raids.json" tas bort.');
+			socket.emit('loadjson', '?');
+		};
+	}, 3600000);
 	socket.on('login', function (data){
 		var datajson = JSON.parse(data);
 		if(datajson.username == 'anonym'){
