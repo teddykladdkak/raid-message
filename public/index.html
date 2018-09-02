@@ -266,6 +266,9 @@
 		.disabled {
 			opacity: 0.5;
 		}
+		.kommerwrapper {
+			padding: 10px 0px;
+		}
 	</style>
 </head>
 <body onload="load();">
@@ -753,6 +756,18 @@
 						};
 					imgwrapp.appendChild(imginnerwrapp);
 				body.appendChild(imgwrapp);
+				var kommerpeople = document.createElement('div');
+					kommerpeople.setAttribute('class', 'kommerwrapper');
+				for (var i = kommernummer.length - 1; i >= 0; i--) {
+					var kommernamnwrapper = document.createElement('span');
+						kommernamnwrapper.setAttribute('class', kommernummer[i].team + 'bg');
+						var kommernamn = document.createTextNode(kommernummer[i].username + ' (' + kommernummer[i].antal + ')');
+						kommernamnwrapper.appendChild(kommernamn);
+					kommerpeople.appendChild(kommernamnwrapper);
+					var spacerkommer = document.createTextNode(', ');
+					kommerpeople.appendChild(spacerkommer);
+				};
+				body.appendChild(kommerpeople);
 				var tableextra = document.createElement('table');
 					tableextra.setAttribute('class', 'tablewidth');
 					var tabletr = document.createElement('tr');
@@ -774,7 +789,11 @@
 						var kommerantaltd = document.createElement('td');
 							kommerantaltd.setAttribute('onclick', 'kommer("' + id + '");');
 							kommerantaltd.setAttribute('class', 'kommernummer invert nooffline');
-							var kommerantal = document.createTextNode('(' + kommernummer.length + ')');
+							var kommersammannummer = 0;
+							for (var i = kommernummer.length - 1; i >= 0; i--) {
+								kommersammannummer = kommersammannummer + kommernummer[i].antal;
+							};
+							var kommerantal = document.createTextNode('(' + kommersammannummer + ')');
 							kommerantaltd.appendChild(kommerantal);
 						tabletr.appendChild(kommerantaltd);
 						var spacer = document.createElement('td');
@@ -877,9 +896,24 @@
 		socket.emit('addkommer', id);
 	};
 	socket.on('nykommer', function (data) {
+		var kommerpeople = document.getElementById(data.id).getElementsByClassName('kommerwrapper')[0];
+		removechilds(kommerpeople);
+		for (var i = data.data.length - 1; i >= 0; i--) {
+			var kommernamnwrapper = document.createElement('span');
+				kommernamnwrapper.setAttribute('class', data.data[i].team + 'bg');
+				var kommernamn = document.createTextNode(data.data[i].username + ' (' + data.data[i].antal + ')');
+				kommernamnwrapper.appendChild(kommernamn);
+			kommerpeople.appendChild(kommernamnwrapper);
+			var spacerkommer = document.createTextNode(', ');
+			kommerpeople.appendChild(spacerkommer);
+		};
 		var wrapper = document.getElementById(data.id).getElementsByClassName('kommernummer')[0];
 		removechilds(wrapper);
-			var newtext = document.createTextNode('(' + data.data.length + ')')
+			var kommersammannummer = 0;
+			for (var i = data.data.length - 1; i >= 0; i--) {
+				kommersammannummer = kommersammannummer + data.data[i].antal;
+			};
+			var newtext = document.createTextNode('(' + kommersammannummer + ')')
 			wrapper.appendChild(newtext);
 	});
 	function remove(id, username, team){
