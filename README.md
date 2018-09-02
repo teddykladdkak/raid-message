@@ -48,7 +48,6 @@ node .
 
 ## Todo
 * Disable notifications.
-* Allow users to change that they are not coming.
 * Test and debug image to text.
 * Load all files from server.. (After debug)
 * Make setting for users to only show gyms in a specific area.
@@ -69,3 +68,4 @@ node .
 * 1/9 ~~Push notifications (probably only android and computer due to iOS do not support this at this time).~~
 * 2/9 ~~Clean "raids.json" at the days end.~~
 * 2/9 ~~Allows users to see who said they are coming.~~
+* 2/9 ~~Allow users to change that they are not coming.~~

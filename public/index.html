@@ -267,7 +267,12 @@
 			opacity: 0.5;
 		}
 		.kommerwrapper {
-			padding: 10px 0px;
+			padding: -5px;
+			margin: 10px 0px;
+		}
+		.kommerwrapper span {
+			margin: 3px 3px;
+			display: inline-block;
 		}
 	</style>
 </head>
@@ -703,30 +708,12 @@
 						var taborttd = document.createElement('td');
 							taborttd.setAttribute('class', 'right');
 							if(location == 'false' || !location){}else{
-								var mapslank = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-									mapslank.setAttribute('aria-hidden', 'true');
-									mapslank.setAttribute('class', 'svg');
-									mapslank.setAttribute('role', 'img');
-									mapslank.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-									mapslank.setAttribute('viewBox', '0 0 496 512');
+								var mapslank = makeSVG('0 0 496 512', 'M347.94 129.86L203.6 195.83a31.938 31.938 0 0 0-15.77 15.77l-65.97 144.34c-7.61 16.65 9.54 33.81 26.2 26.2l144.34-65.97a31.938 31.938 0 0 0 15.77-15.77l65.97-144.34c7.61-16.66-9.54-33.81-26.2-26.2zm-77.36 148.72c-12.47 12.47-32.69 12.47-45.16 0-12.47-12.47-12.47-32.69 0-45.16 12.47-12.47 32.69-12.47 45.16 0 12.47 12.47 12.47 32.69 0 45.16zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm0 448c-110.28 0-200-89.72-200-200S137.72 56 248 56s200 89.72 200 200-89.72 200-200 200z');
 									mapslank.setAttribute('onclick', 'window.open("http://maps.google.com/?q=' + location.longitud + ',' + location.latitud + '")');
-									var mapslankpath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-										mapslankpath.setAttribute('fill', 'currentColor');
-										mapslankpath.setAttribute('d', 'M347.94 129.86L203.6 195.83a31.938 31.938 0 0 0-15.77 15.77l-65.97 144.34c-7.61 16.65 9.54 33.81 26.2 26.2l144.34-65.97a31.938 31.938 0 0 0 15.77-15.77l65.97-144.34c7.61-16.66-9.54-33.81-26.2-26.2zm-77.36 148.72c-12.47 12.47-32.69 12.47-45.16 0-12.47-12.47-12.47-32.69 0-45.16 12.47-12.47 32.69-12.47 45.16 0 12.47 12.47 12.47 32.69 0 45.16zM248 8C111.03 8 0 119.03 0 256s111.03 248 248 248 248-111.03 248-248S384.97 8 248 8zm0 448c-110.28 0-200-89.72-200-200S137.72 56 248 56s200 89.72 200 200-89.72 200-200 200z');
-									mapslank.appendChild(mapslankpath);
 								taborttd.appendChild(mapslank);
 							};
-							var tabort = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-								tabort.setAttribute('aria-hidden', 'true');
-								tabort.setAttribute('class', 'svg nooffline');
-								tabort.setAttribute('role', 'img');
-								tabort.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-								tabort.setAttribute('viewBox', '0 0 512 512');
+							var tabort = makeSVG('0 0 512 512', 'M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z');
 								tabort.setAttribute('onclick', 'remove("' + id + '", "' + username + '", "' + team + '");');
-								var tabortpath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-									tabortpath.setAttribute('fill', 'currentColor');
-									tabortpath.setAttribute('d', 'M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z');
-								tabort.appendChild(tabortpath);
 							taborttd.appendChild(tabort);
 						usertr.appendChild(taborttd);
 					user.appendChild(usertr);
@@ -747,7 +734,6 @@
 						imginnerwrapp.appendChild(img);
 						if(!exraid){}else{
 							if(exraid == 'true'){
-								//	img.setAttribute('class', 'raidimage exraid');
 								var eximg = document.createElement('img');
 									eximg.setAttribute('src', 'img/ex-raid.png');
 									eximg.setAttribute('class', 'exraid');
@@ -758,36 +744,51 @@
 				body.appendChild(imgwrapp);
 				var kommerpeople = document.createElement('div');
 					kommerpeople.setAttribute('class', 'kommerwrapper');
-				for (var i = kommernummer.length - 1; i >= 0; i--) {
-					var kommernamnwrapper = document.createElement('span');
-						kommernamnwrapper.setAttribute('class', kommernummer[i].team + 'bg');
-						var kommernamn = document.createTextNode(kommernummer[i].username + ' (' + kommernummer[i].antal + ')');
-						kommernamnwrapper.appendChild(kommernamn);
-					kommerpeople.appendChild(kommernamnwrapper);
-					var spacerkommer = document.createTextNode(', ');
-					kommerpeople.appendChild(spacerkommer);
-				};
+					kommerpeople.setAttribute('style', 'display: none;');
+					var tableextra = document.createElement('table');
+						tableextra.setAttribute('class', 'tablewidth');
+						var tabletr = document.createElement('tr');
+							var kommertd = document.createElement('td');
+								kommertd.setAttribute('onclick', 'kommer("' + id + '", "+");');
+								kommertd.setAttribute('class', 'invert nooffline');
+								kommertd.appendChild(makeSVG('0 0 640 512', 'M624 208h-64v-64c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v64h-64c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h64v64c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-64h64c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm-400 48c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z'));
+							tabletr.appendChild(kommertd);
+							var spacer = document.createElement('td');
+								spacer.setAttribute('width', '100%');
+							tabletr.appendChild(spacer);
+							var kommertd = document.createElement('td');
+								kommertd.setAttribute('onclick', 'kommer("' + id + '", "-");');
+								kommertd.setAttribute('class', 'invert nooffline');
+								kommertd.appendChild(makeSVG('0 0 640 512', 'M624 208H432c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h192c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm-400 48c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z'));
+							tabletr.appendChild(kommertd);
+						tableextra.appendChild(tabletr);
+					kommerpeople.appendChild(tableextra);
+					var kommerholder = document.createElement('div');
+						kommerholder.setAttribute('class', 'kommerholder');
+						for (var i = kommernummer.length - 1; i >= 0; i--) {
+							var kommernamnwrapper = document.createElement('span');
+								kommernamnwrapper.setAttribute('class', kommernummer[i].team + 'bg');
+								if(parseInt(kommernummer[i].antal) == 1){
+									var antaltext = '';
+								}else{
+									var antaltext = ' (+' + (parseInt(kommernummer[i].antal) - 1) + ')';
+								};
+								var kommernamn = document.createTextNode(kommernummer[i].username + antaltext);
+								kommernamnwrapper.appendChild(kommernamn);
+							kommerholder.appendChild(kommernamnwrapper);
+						};
+					kommerpeople.appendChild(kommerholder);
 				body.appendChild(kommerpeople);
 				var tableextra = document.createElement('table');
 					tableextra.setAttribute('class', 'tablewidth');
 					var tabletr = document.createElement('tr');
 						var kommertd = document.createElement('td');
-							kommertd.setAttribute('onclick', 'kommer("' + id + '");');
+							kommertd.setAttribute('onclick', 'openkommer("' + id + '");');
 							kommertd.setAttribute('class', 'invert nooffline');
-							var kommer = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-								kommer.setAttribute('aria-hidden', 'true');
-								kommer.setAttribute('class', 'svg');
-								kommer.setAttribute('role', 'img');
-								kommer.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-								kommer.setAttribute('viewBox', '0 0 640 512');
-								var kommerpath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-									kommerpath.setAttribute('fill', 'currentColor');
-									kommerpath.setAttribute('d', 'M624 208h-64v-64c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v64h-64c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h64v64c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-64h64c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm-400 48c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z');
-								kommer.appendChild(kommerpath);
-							kommertd.appendChild(kommer);
+							kommertd.appendChild(makeSVG('0 0 640 512', 'M96 224c35.3 0 64-28.7 64-64s-28.7-64-64-64-64 28.7-64 64 28.7 64 64 64zm448 0c35.3 0 64-28.7 64-64s-28.7-64-64-64-64 28.7-64 64 28.7 64 64 64zm32 32h-64c-17.6 0-33.5 7.1-45.1 18.6 40.3 22.1 68.9 62 75.1 109.4h66c17.7 0 32-14.3 32-32v-32c0-35.3-28.7-64-64-64zm-256 0c61.9 0 112-50.1 112-112S381.9 32 320 32 208 82.1 208 144s50.1 112 112 112zm76.8 32h-8.3c-20.8 10-43.9 16-68.5 16s-47.6-6-68.5-16h-8.3C179.6 288 128 339.6 128 403.2V432c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48v-28.8c0-63.6-51.6-115.2-115.2-115.2zm-223.7-13.4C161.5 263.1 145.6 256 128 256H64c-35.3 0-64 28.7-64 64v32c0 17.7 14.3 32 32 32h65.9c6.3-47.4 34.9-87.3 75.2-109.4z'));
 						tabletr.appendChild(kommertd);
 						var kommerantaltd = document.createElement('td');
-							kommerantaltd.setAttribute('onclick', 'kommer("' + id + '");');
+							kommerantaltd.setAttribute('onclick', 'openkommer("' + id + '");');
 							kommerantaltd.setAttribute('class', 'kommernummer invert nooffline');
 							var kommersammannummer = 0;
 							for (var i = kommernummer.length - 1; i >= 0; i--) {
@@ -802,17 +803,7 @@
 						var kommentartd = document.createElement('td');
 							kommentartd.setAttribute('class', 'right invert');
 							kommentartd.setAttribute('onclick', 'hideshowkomment("' + id + '");');
-							var kommentar = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-								kommentar.setAttribute('aria-hidden', 'true');
-								kommentar.setAttribute('class', 'svg');
-								kommentar.setAttribute('role', 'img');
-								kommentar.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-								kommentar.setAttribute('viewBox', '0 0 576 512');
-								var kommentarpath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-									kommentarpath.setAttribute('fill', 'currentColor');
-									kommentarpath.setAttribute('d', 'M532 386.2c27.5-27.1 44-61.1 44-98.2 0-80-76.5-146.1-176.2-157.9C368.3 72.5 294.3 32 208 32 93.1 32 0 103.6 0 192c0 37 16.5 71 44 98.2-15.3 30.7-37.3 54.5-37.7 54.9-6.3 6.7-8.1 16.5-4.4 25 3.6 8.5 12 14 21.2 14 53.5 0 96.7-20.2 125.2-38.8 9.2 2.1 18.7 3.7 28.4 4.9C208.1 407.6 281.8 448 368 448c20.8 0 40.8-2.4 59.8-6.8C456.3 459.7 499.4 480 553 480c9.2 0 17.5-5.5 21.2-14 3.6-8.5 1.9-18.3-4.4-25-.4-.3-22.5-24.1-37.8-54.8zm-392.8-92.3L122.1 305c-14.1 9.1-28.5 16.3-43.1 21.4 2.7-4.7 5.4-9.7 8-14.8l15.5-31.1L77.7 256C64.2 242.6 48 220.7 48 192c0-60.7 73.3-112 160-112s160 51.3 160 112-73.3 112-160 112c-16.5 0-33-1.9-49-5.6l-19.8-4.5zM498.3 352l-24.7 24.4 15.5 31.1c2.6 5.1 5.3 10.1 8 14.8-14.6-5.1-29-12.3-43.1-21.4l-17.1-11.1-19.9 4.6c-16 3.7-32.5 5.6-49 5.6-54 0-102.2-20.1-131.3-49.7C338 339.5 416 272.9 416 192c0-3.4-.4-6.7-.7-10C479.7 196.5 528 238.8 528 288c0 28.7-16.2 50.6-29.7 64z');
-								kommentar.appendChild(kommentarpath);
-							kommentartd.appendChild(kommentar);
+							kommentartd.appendChild(makeSVG('0 0 576 512', 'M532 386.2c27.5-27.1 44-61.1 44-98.2 0-80-76.5-146.1-176.2-157.9C368.3 72.5 294.3 32 208 32 93.1 32 0 103.6 0 192c0 37 16.5 71 44 98.2-15.3 30.7-37.3 54.5-37.7 54.9-6.3 6.7-8.1 16.5-4.4 25 3.6 8.5 12 14 21.2 14 53.5 0 96.7-20.2 125.2-38.8 9.2 2.1 18.7 3.7 28.4 4.9C208.1 407.6 281.8 448 368 448c20.8 0 40.8-2.4 59.8-6.8C456.3 459.7 499.4 480 553 480c9.2 0 17.5-5.5 21.2-14 3.6-8.5 1.9-18.3-4.4-25-.4-.3-22.5-24.1-37.8-54.8zm-392.8-92.3L122.1 305c-14.1 9.1-28.5 16.3-43.1 21.4 2.7-4.7 5.4-9.7 8-14.8l15.5-31.1L77.7 256C64.2 242.6 48 220.7 48 192c0-60.7 73.3-112 160-112s160 51.3 160 112-73.3 112-160 112c-16.5 0-33-1.9-49-5.6l-19.8-4.5zM498.3 352l-24.7 24.4 15.5 31.1c2.6 5.1 5.3 10.1 8 14.8-14.6-5.1-29-12.3-43.1-21.4l-17.1-11.1-19.9 4.6c-16 3.7-32.5 5.6-49 5.6-54 0-102.2-20.1-131.3-49.7C338 339.5 416 272.9 416 192c0-3.4-.4-6.7-.7-10C479.7 196.5 528 238.8 528 288c0 28.7-16.2 50.6-29.7 64z'));
 						tabletr.appendChild(kommentartd);
 						var kommentarantaltd = document.createElement('td');
 							kommentarantaltd.setAttribute('onclick', 'hideshowkomment("' + id + '");');
@@ -855,6 +846,27 @@
 			};
 		};
 	};
+	function openkommer(id){
+		var wrapper = document.getElementById(id).getElementsByClassName('kommerwrapper')[0];
+		if(!wrapper.getAttribute('style')){
+			wrapper.setAttribute('style', 'display: none;');
+		}else{
+			wrapper.removeAttribute('style');
+		};
+	};
+	function makeSVG(viewbox, d){
+		var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+			svg.setAttribute('aria-hidden', 'true');
+			svg.setAttribute('class', 'svg');
+			svg.setAttribute('role', 'img');
+			svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+			svg.setAttribute('viewBox', viewbox);
+			var path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+				path.setAttribute('fill', 'currentColor');
+				path.setAttribute('d', d);
+			svg.appendChild(path);
+		return svg;
+	};
 	function skickakommentar(id){
 		var text = document.getElementById(id).getElementsByTagName('textarea')[0];
 		socket.emit('addkomment', {"id": id, "kommentar": text.value});
@@ -892,20 +904,23 @@
 					p.appendChild(ptext);
 				kommentwrapper.appendChild(p);
 	};
-	function kommer(id){
-		socket.emit('addkommer', id);
+	function kommer(id, todo){
+		socket.emit('addkommer', {"id": id, "todo": todo});
 	};
 	socket.on('nykommer', function (data) {
-		var kommerpeople = document.getElementById(data.id).getElementsByClassName('kommerwrapper')[0];
+		var kommerpeople = document.getElementById(data.id).getElementsByClassName('kommerholder')[0];
 		removechilds(kommerpeople);
 		for (var i = data.data.length - 1; i >= 0; i--) {
 			var kommernamnwrapper = document.createElement('span');
 				kommernamnwrapper.setAttribute('class', data.data[i].team + 'bg');
-				var kommernamn = document.createTextNode(data.data[i].username + ' (' + data.data[i].antal + ')');
+				if(parseInt(data.data[i].antal) == 1){
+					var antaltext = '';
+				}else{
+					var antaltext = ' (+' + (parseInt(data.data[i].antal) - 1) + ')';
+				};
+				var kommernamn = document.createTextNode(data.data[i].username + antaltext);
 				kommernamnwrapper.appendChild(kommernamn);
 			kommerpeople.appendChild(kommernamnwrapper);
-			var spacerkommer = document.createTextNode(', ');
-			kommerpeople.appendChild(spacerkommer);
 		};
 		var wrapper = document.getElementById(data.id).getElementsByClassName('kommernummer')[0];
 		removechilds(wrapper);

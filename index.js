@@ -209,9 +209,9 @@ io.sockets.on('connection', function (socket, username) {
 			};
 		};
 	});
-	socket.on('addkommer', function (id){
+	socket.on('addkommer', function (data){
 		for (var i = dataraids.raiddata.length - 1; i >= 0; i--) {
-			if(dataraids.raiddata[i].id == id){
+			if(dataraids.raiddata[i].id == data.id){
 
 				var exist = 'false';
 				//for (var a = dataraids.raiddata[i].kommer.length - 1; a >= 0; a--) {
@@ -221,16 +221,24 @@ io.sockets.on('connection', function (socket, username) {
 					};
 				};
 				if(exist == 'false'){
-					dataraids.raiddata[i].kommer.push({"username": socket.username, "team": socket.team, "antal": 1});
+					if(data.todo == '+'){
+						dataraids.raiddata[i].kommer.push({"username": socket.username, "team": socket.team, "antal": 1});
+					};
 				}else{
-					dataraids.raiddata[i].kommer[exist].antal = dataraids.raiddata[i].kommer[exist].antal + 1;
+					if(data.todo == '-'){
+						console.log(dataraids.raiddata[i].kommer[exist].antal);
+						if(dataraids.raiddata[i].kommer[exist].antal <= 1){
+							dataraids.raiddata[i].kommer.splice(exist, 1);
+						}else{
+							dataraids.raiddata[i].kommer[exist].antal = dataraids.raiddata[i].kommer[exist].antal - 1;
+						};
+					}else{
+						dataraids.raiddata[i].kommer[exist].antal = dataraids.raiddata[i].kommer[exist].antal + 1;
+					};
 				};
-				
-
-
 				fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify(dataraids, null, ' '));
-				socket.emit('nykommer', {"id": id, "data": dataraids.raiddata[i].kommer});
-				socket.broadcast.emit('nykommer', {"id": id, "data": dataraids.raiddata[i].kommer});
+				socket.emit('nykommer', {"id": data.id, "data": dataraids.raiddata[i].kommer});
+				socket.broadcast.emit('nykommer', {"id": data.id, "data": dataraids.raiddata[i].kommer});
 				break;
 			};
 		};
