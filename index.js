@@ -176,7 +176,7 @@ io.sockets.on('connection', function (socket, username) {
 	socket.on('postraid', function (data){
 		data.username = socket.username;
 		data.team = socket.team;
-		data.kommer = [{"username": socket.username, "team": socket.team}];
+		data.kommer = [{"username": socket.username, "team": socket.team, "antal": 1}];
 		data.kommentar = [];
 		data.id = randomString(10);
 		data.raidkommentar = rensaochsakra(data.raidkommentar);
