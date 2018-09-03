@@ -50,7 +50,9 @@ node .
 * Disable notifications.
 * Test and debug image to text.
 * Load all files from server.. (After debug)
-* Make setting for users to only show gyms in a specific area.
+* Only load posts from selected areas.
+* Only notifications from selected areas.
+* In settings allow users to turn off or turn on notifications.
 * 29/8 ~~Give the user information if no raids are posted (instead of a blank page).~~
 * 29/8 ~~Change order of comments.~~
 * 30/8 ~~Menu always visible~~
@@ -69,3 +71,4 @@ node .
 * 2/9 ~~Clean "raids.json" at the days end.~~
 * 2/9 ~~Allows users to see who said they are coming.~~
 * 2/9 ~~Allow users to change that they are not coming.~~
+* 3/9 ~~Make setting for users to only show gyms in a specific area.~~
