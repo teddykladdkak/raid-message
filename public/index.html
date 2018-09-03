@@ -711,7 +711,7 @@
 		        	addinfo(config.messages.nopost);
 		        }else{
 					for (var i = data.raiddata.length - 1; i >= 0; i--) {
-						addpost(data.raiddata[i].username, data.raiddata[i].team, data.raiddata[i].raidtid, data.raiddata[i].raidkommentar, data.raiddata[i].raidimage, data.raiddata[i].kommer, data.raiddata[i].kommentar, data.raiddata[i].id, 'false', data.raiddata[i].exraid, data.raiddata[i].location);
+						addpost(data.raiddata[i].username, data.raiddata[i].team, data.raiddata[i].raidtid, data.raiddata[i].raidkommentar, data.raiddata[i].raidimage, data.raiddata[i].kommer, data.raiddata[i].kommentar, data.raiddata[i].id, 'false', data.raiddata[i].exraid, data.raiddata[i].location, data.raiddata[i].tags);
 					};
 				};
 		    }
@@ -749,12 +749,16 @@
 		if(!wrapper){}else{
 			wrapper.parentElement.removeChild(wrapper);
 		};
-		addpost(data.username, data.team, data.raidtid, data.raidkommentar, data.raidimage, data.kommer, data.kommentar, data.id, 'true', data.exraid, data.location);
+		addpost(data.username, data.team, data.raidtid, data.raidkommentar, data.raidimage, data.kommer, data.kommentar, data.id, 'true', data.exraid, data.location, data.tags);
 	});
-	function addpost(username, team, raidtid, raidkommentar, raidimage, kommernummer, kommentarer, id, firstorlast, exraid, location){
+	function addpost(username, team, raidtid, raidkommentar, raidimage, kommernummer, kommentarer, id, firstorlast, exraid, location, tags){
 		var wrapper = document.getElementById('posts');
 			var body = document.createElement('span');
-				body.setAttribute('class', 'postbody');
+				if(!tags || tags == ''){
+					body.setAttribute('class', 'postbody');
+				}else{
+					body.setAttribute('class', 'postbody ' + tags.join(' '));
+				};
 				body.setAttribute('id', id);
 				var user = document.createElement('table');
 					user.setAttribute('class', team + 'bg tablewidth');
