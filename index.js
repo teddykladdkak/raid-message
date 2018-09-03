@@ -133,6 +133,7 @@ webpush.setVapidDetails(
 	privateKey
 );
 app.post("/subscribe", (req, res) => {
+	console.log('Lägger till notifiering')
 	var data = req.body;
 	var todo = 'true';
 	for (var i = subscribers.length - 1; i >= 0; i--) {if(subscribers[i].subscription.keys.p256dh == data.subscription.keys.p256dh){var todo = 'false';};};
@@ -142,6 +143,20 @@ app.post("/subscribe", (req, res) => {
 	};
 	res.status(201).json({});
 });
+app.post("/removesubscribe", (req, res) => {
+	console.log('Tar bort notifiering')
+	var data = req.body;
+	var todo = 'true';
+	console.log(data);
+	for (var i = subscribers.length - 1; i >= 0; i--) {
+		if(subscribers[i].subscription.keys.p256dh == data.subscription.keys.p256dh){
+			subscribers.splice(i, 1);
+		};
+	};
+	fs.writeFileSync(__dirname + '/subscribers.json', JSON.stringify({"data": subscribers}, null, ' '));
+	res.status(201).json({});
+});
+
 app.use(express.static(path.join(__dirname, "public")));
 
 function randomString(length){
