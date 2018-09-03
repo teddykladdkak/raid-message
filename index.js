@@ -71,6 +71,73 @@ if (fs.existsSync(__dirname + '/notificationPrivateKey.json')) {
 	console.log('New keys for notifications!\nPrivateKey: "' + __dirname + config.privatekey + '.json"\nPublicKey: "' + __dirname + config.publickey + '.js"');
 };
 
+function inside(point, vs) {
+    // ray-casting algorithm based on
+    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+
+    var x = point[0], y = point[1];
+
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        var xi = vs[i][0], yi = vs[i][1];
+        var xj = vs[j][0], yj = vs[j][1];
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
+};
+//https://codepen.io/jennerpalacios/full/mWWVeJ
+function checkifinside(longitude, latitude){
+	var geofence = {
+		lund: [ [55.74521027874359,13.131354971508813],
+			[55.690192632347085,13.118480368237329],
+			[55.67490157435282,13.154357596020532],
+			[55.67093266456603,13.18062178669436],
+			[55.67335277941169,13.212722464184594],
+			[55.678870081529325,13.243964834790063],
+			[55.68467692734803,13.262332602124047],
+			[55.69822288173381,13.275378866772485],
+			[55.715728910178726,13.276408835034204],
+			[55.73255051684848,13.267654104809594],
+			[55.74395415003082,13.246196432690454] ],
+		lth: [ [55.7155533755128, 13.201926111110879],
+			[55.71303916847573, 13.203986047634316],
+			[55.71079075012971, 13.204973100551797],
+			[55.70827623655978, 13.206560968288613],
+			[55.70663204403398, 13.208234666713906],
+			[55.70527795118006, 13.20939338100834],
+			[55.70522958985316, 13.211667894252969],
+			[55.70602754409371, 13.215830682644082],
+			[55.706849661723176, 13.22012221706791],
+			[55.71485231482068, 13.222525476345254],
+			[55.71545667823435, 13.229177354702188],
+			[55.716181901988044, 13.232224344143106],
+			[55.71920352269811, 13.230550645717813],
+			[55.720122049062134, 13.2263878573267],
+			[55.72019456338137, 13.21862018001957],
+			[55.720146220516824, 13.211968301662637],
+			[55.72002536309372, 13.207548021206094],
+			[55.71722136588752, 13.203513978847695] ]
+		}
+		var tags = [];
+		if(inside([ longitude, latitude ], geofence.lund)){
+			tags.push('lund');
+		};
+		if(inside([ longitude, latitude ], geofence.lth)){
+			tags.push('lth');
+		};
+		return tags;
+	};
+
+	
+console.log('Malmö: ' + checkifinside(55.600374, 13.092303));
+console.log('Lund inte LTH: ' + checkifinside(55.717065, 13.185326));
+console.log('Sjön sjön: ' + checkifinside(55.710625, 13.209400));
+
+
 const app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
