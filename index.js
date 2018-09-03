@@ -72,21 +72,15 @@ if (fs.existsSync(__dirname + '/notificationPrivateKey.json')) {
 };
 
 function inside(point, vs) {
-    // ray-casting algorithm based on
-    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-
     var x = point[0], y = point[1];
-
     var inside = false;
     for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
         var xi = vs[i][0], yi = vs[i][1];
         var xj = vs[j][0], yj = vs[j][1];
-
         var intersect = ((yi > y) != (yj > y))
             && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
         if (intersect) inside = !inside;
-    }
-
+    };
     return inside;
 };
 //https://codepen.io/jennerpalacios/full/mWWVeJ
@@ -100,11 +94,7 @@ function checkifinside(longitude, latitude){
 		};
 	};
 	return tags;
-};	
-//console.log('Malmö: ' + checkifinside(55.600374, 13.092303));
-//console.log('Lund inte LTH: ' + checkifinside(55.717065, 13.185326));
-//console.log('Sjön sjön: ' + checkifinside(55.710625, 13.209400));
-
+};
 
 const app = express();
 var server = require('http').Server(app);
