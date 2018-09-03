@@ -47,12 +47,10 @@ node .
 9. Use one of the links as shown
 
 ## Todo
-* Disable notifications.
+* If image to text cant read, redo and make changes to the settings until success or fail.
+* Support users that dont take screenshot of the egg or raidpokemon.
 * Test and debug image to text.
 * Load all files from server.. (After debug)
-* Only load posts from selected areas.
-* Only notifications from selected areas.
-* In settings allow users to turn off or turn on notifications.
 * 29/8 ~~Give the user information if no raids are posted (instead of a blank page).~~
 * 29/8 ~~Change order of comments.~~
 * 30/8 ~~Menu always visible~~
@@ -72,3 +70,7 @@ node .
 * 2/9 ~~Allows users to see who said they are coming.~~
 * 2/9 ~~Allow users to change that they are not coming.~~
 * 3/9 ~~Make setting for users to only show gyms in a specific area.~~
+* 4/9 ~~Disable notifications.~~
+* 4/9 ~~In settings allow users to turn off or turn on notifications.~~
+* 4/9 ~~Only notifications from selected areas.~~
+* 4/9 ~~Only load posts from selected areas.~~

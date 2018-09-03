@@ -121,9 +121,21 @@ function sendnotification(data){
 	var notiText = data.raidtid + ': ' + data.raidkommentar;
 	const payload = JSON.stringify({ title: maxthirty(data.gymnamn), text: maxthirty(notiText), icon: data.icon});
 	for (var i = subscribers.length - 1; i >= 0; i--) {
-		webpush
-			.sendNotification(subscribers[i].subscription, payload)
-			.catch(err => console.log(colors.red('Subscriber nr: ' + i + ' are unsuscribed.')));
+		if(!subscribers[i].tags){
+			var todo = 'true';
+		}else{
+			var todo = 'false';
+			for (var a = subscribers[i].tags.length - 1; a >= 0; a--) {
+				if(JSON.stringify(data.tags).includes(subscribers[i].tags[a])){
+					var todo = 'true';
+				};
+			};
+		};
+		if(todo == 'true'){
+			webpush
+				.sendNotification(subscribers[i].subscription, payload)
+				.catch(err => console.log(colors.red('Subscriber nr: ' + i + ' are unsuscribed.')));
+		};
 	};
 };
 app.use(bodyParser.json());
@@ -220,6 +232,14 @@ io.sockets.on('connection', function (socket, username) {
 		};
 		socket.team = rensaochsakra(datajson.team);
 		socket.emit('sendinfo', {"userinfo": datajson, "anonym": anonym});
+	});
+	socket.on('addfilter', function (data){
+		for (var i = subscribers.length - 1; i >= 0; i--) {
+			if(subscribers[i].subscription.keys.p256dh == JSON.parse(data.usersub).subscription.keys.p256dh){
+				subscribers[i].tags = data.areas;
+			};
+		};
+		fs.writeFileSync(__dirname + '/subscribers.json', JSON.stringify({"data": subscribers}, null, ' '));
 	});
 	socket.on('postraid', function (data){
 		data.username = socket.username;

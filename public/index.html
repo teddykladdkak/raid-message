@@ -394,13 +394,13 @@
 				</tr>
 			</table>
 			<h2>Filtrera område</h2>
-			<label><input type="checkbox" name="lth" onclick="filerarea();">LTH</label>
-			<label><input type="checkbox" name="linero" onclick="filerarea();">Linero</label>
-			<label><input type="checkbox" name="ostratorn" onclick="filerarea();">Östra torn</label>
-			<label><input type="checkbox" name="norrafaladen" onclick="filerarea();">Norra Fäladen</label>
-			<label><input type="checkbox" name="vaster" onclick="filerarea();">Väster</label>
-			<label><input type="checkbox" name="klostergarden" onclick="filerarea();">Klostergården</label>
-			<label><input type="checkbox" name="centrum" onclick="filerarea();">Centrum</label>
+			<label><input type="checkbox" name="lth" onclick="filterarea();">LTH</label>
+			<label><input type="checkbox" name="linero" onclick="filterarea();">Linero</label>
+			<label><input type="checkbox" name="ostratorn" onclick="filterarea();">Östra torn</label>
+			<label><input type="checkbox" name="norrafaladen" onclick="filterarea();">Norra Fäladen</label>
+			<label><input type="checkbox" name="vaster" onclick="filterarea();">Väster</label>
+			<label><input type="checkbox" name="klostergarden" onclick="filterarea();">Klostergården</label>
+			<label><input type="checkbox" name="centrum" onclick="filterarea();">Centrum</label>
 		</div>
 		<div id="posts">
 			
@@ -457,7 +457,7 @@
 	function showhidesetting(){
 		showhide('settings', 'false', 'false', 'false');
 	};
-	function filerarea(){
+	function filterarea(load){
 		var checkboxes = document.getElementById('settings').getElementsByTagName('input');
 		var areastohide = [];
 		for (var i = checkboxes.length - 1; i >= 0; i--) {
@@ -467,10 +467,26 @@
 		};
 		var wrapper = document.getElementById('geoposts');
 			removechilds(wrapper);
+		localStorage.setItem('geofence', areastohide);
 		if(areastohide.length == 0){}else{
 			var kode = document.createTextNode('.postbody {display: none;} .' + areastohide.join(', .') + '{ display: block;}')
 			wrapper.appendChild(kode);
 		};
+		if(load == 'true'){}else{
+			socket.emit('addfilter', {"areas": areastohide, "usersub": localStorage.getItem('notifiering')});
+		};
+	};
+	function loadfilterarea(){
+		if(!localStorage.getItem('geofence') || localStorage.getItem('geofence') == ''){}else{
+			var filterstoadd = localStorage.getItem('geofence').split(',');
+			var checkboxes = document.getElementById('settings').getElementsByTagName('input');
+			for (var i = checkboxes.length - 1; i >= 0; i--) {
+				if(filterstoadd.includes(checkboxes[i].getAttribute('name'))){
+					checkboxes[i].checked = true;
+				};
+			};
+		};
+		filterarea('true');
 	};
 	function showhide(id, wrapperclass, fokus, todo){
 		if(!wrapperclass || wrapperclass == 'false'){
@@ -654,7 +670,9 @@
 		document.getElementById('promptback').value = back;
 		document.getElementById('prompt').setAttribute('class', 'visible');
 		document.getElementById('promptbg').setAttribute('class', 'visible');
-		if(inputtodo == 'false'){}else{
+		if(inputtodo == 'false'){
+			document.getElementById('promptaction').focus();
+		}else{
 			document.getElementById('promptinput').focus();
 		};
 	};
@@ -764,7 +782,9 @@
 	};
 	var geturl = window.location.href.replace('http://', '').replace('https://', '').split('/')[0];
 	var socket = io.connect(geturl);
-	function load(){};
+	function load(){
+		loadfilterarea();
+	};
 	function addinfo(message){
 		var wrapper = document.getElementById('posts');
     		var noposts = document.createElement('p');
