@@ -185,6 +185,27 @@
 			opacity: 0.5;
 			z-index: 998;
 		}
+		.visible, .hidden {
+			overflow: hidden;
+			/* This container should not have padding, borders, etc. */
+		}
+		.visible {
+			visibility: visible;
+			opacity: 1;
+			transition: opacity 0.1s linear;
+		}
+		.hidden {
+			visibility: hidden;
+			opacity: 0;
+			transition: visibility 0s 0.1s, opacity 0.1s linear;
+		}
+		.visible > div, .hidden > div {
+			/* Put any padding, border, min-height, etc. here. */
+		}
+		.hidden > div {
+			margin-top: -10000px;
+			transition: margin-top 0s 0.1s;
+		}
 		#content {
 			background-color: white;
 			padding: 10px;
@@ -274,6 +295,21 @@
 			margin: 3px 3px;
 			display: inline-block;
 		}
+		.slider {
+			overflow-y: hidden;
+			max-height: 1000px;
+
+			transition:all 500ms ease;
+		}
+		.slider.closed {
+			max-height: 0;
+			transition:all 200ms ease;
+		}
+		#addraid.slider.closed {
+			margin: 0px auto;
+			border: none;
+			padding: 0px;
+		}
 	</style>
 </head>
 <body onload="load();">
@@ -316,9 +352,9 @@
 				</tr>
 			</table>
 		</div>
-		<div id="addraid" style="display: none;">
+		<div id="addraid" class="slider closed">
 			<p>Skärmdump</p>
-			<input type="file" id="raidimage" onchange="makesmallimg(this.files[0]);makeicon(this.files[0]);imgtotext(this.files[0]);"><br/>
+			<input type="file" id="raidimage"class="nooffline" onchange="makesmallimg(this.files[0]);makeicon(this.files[0]);imgtotext(this.files[0]);"><br/>
 			<div class="center"><div class="wrapperraidimagepreview"><img src="img/ingenbild.png" id="raidimagepreview"></div></div>
 			<p>Föreslagen tid</p>
 			<input type="time" id="raidtid">
@@ -331,8 +367,8 @@
 			
 		</div>
 	</div>
-	<div id="promptbg" style="display: none;"></div>
-	<div id="prompt" style="display: none;">
+	<div id="promptbg" class="hidden"></div>
+	<div id="prompt" class="hidden">
 		<span id="content">
 			<p id="prompttext"></p>
 			<span id="wrapperpromptinput"></span>
@@ -350,7 +386,7 @@
 <script src="script/client.js"></script>
 <script src="script/megapix-image.js"></script>
 <script src='https://cdn.rawgit.com/naptha/tesseract.js/1.0.10/dist/tesseract.js'></script>
-<script src="script/gymlund.js" type="text/javascript"></script>
+<script src="https://www.gymlund.tk/library/gymlund.js" type="text/javascript"></script>
 <script type="text/javascript">
 	var config = {
 		imgdesaturate: 60, //0-255
@@ -358,6 +394,21 @@
 		sprak: 'swe',
 		nopost: 'Inga raider reggade ännu idag.. Blir du den första?',
 		loadjson: 'Du har varit bortkopplad från server, raid laddas om.'
+	};//showhide('addraid', 'false', 'false', 'false');
+	function showhide(id, wrapperclass, fokus, todo){
+		if(!wrapperclass || wrapperclass == 'false'){
+			var wrapper = document.getElementById(id);
+		}else{
+			var wrapper = document.getElementById(id).getElementsByClassName(wrapperclass)[0];
+		}
+		if(wrapper.getAttribute('class').includes('closed') || !todo == 'false'){
+			wrapper.setAttribute('class', wrapper.getAttribute('class').replace(' closed', ''));
+			if(!fokus || fokus == 'false'){}else{
+				document.getElementById(id).getElementsByClassName(fokus)[0].focus();
+			};
+		}else{
+			wrapper.setAttribute('class', wrapper.getAttribute('class') + ' closed');
+		};
 	};
 	function rensaochsakra(vari){
 		return vari.replace(/[^A-Za-z0-9\s!?\u00C5\u00C4\u00D6\u00E5\u00E4\u00F6\u002D\u0028\u0029]/g,'');
@@ -518,15 +569,19 @@
 			actionbutton.setAttribute('onclick', func + '(this, "' + inputtodo + '");promptclose();');
 			actionbutton.setAttribute('data-info', data);
 		document.getElementById('promptback').value = back;
-		document.getElementById('prompt').removeAttribute('style');
-		document.getElementById('promptbg').removeAttribute('style');
+		document.getElementById('prompt').setAttribute('class', 'visible');
+		document.getElementById('promptbg').setAttribute('class', 'visible');
+		//document.getElementById('prompt').removeAttribute('style');
+		//document.getElementById('promptbg').removeAttribute('style');
 		if(inputtodo == 'false'){}else{
 			document.getElementById('promptinput').focus();
 		};
 	};
 	function promptclose(){
-		document.getElementById('prompt').setAttribute('style', 'display: none;');
-		document.getElementById('promptbg').setAttribute('style', 'display: none;');
+		//document.getElementById('prompt').setAttribute('style', 'display: none;');
+		//document.getElementById('promptbg').setAttribute('style', 'display: none;');
+		document.getElementById('prompt').setAttribute('class', 'hidden');
+		document.getElementById('promptbg').setAttribute('class', 'hidden');
 		removechilds(document.getElementById('prompttext'));
 		removechilds(document.getElementById('wrapperpromptinput'));
 		var actionbutton = document.getElementById('promptaction');
@@ -578,7 +633,8 @@
 			button.setAttribute('onclick', 'hideaddreaid();');
 			button.setAttribute('viewBox', '0 0 512 512');
 			button.firstChild.setAttribute('d', 'M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z');
-		document.getElementById('addraid').removeAttribute('style');
+		//document.getElementById('addraid').removeAttribute('style');
+		showhide('addraid', 'false', 'false', 'false');
 		document.getElementById('raidimage').click();
 	};
 	function hideaddreaid(){
@@ -592,7 +648,8 @@
 			button.setAttribute('onclick', 'addraid(this);');
 			button.setAttribute('viewBox', '0 0 448 512');
 			button.firstChild.setAttribute('d', 'M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-32 252c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92H92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z');
-		document.getElementById('addraid').setAttribute('style', 'display: none;');
+		//document.getElementById('addraid').setAttribute('style', 'display: none;');
+		showhide('addraid', 'false', 'false', 'hide');
 	};
 	function postraid(){
 		var postbutton = document.getElementsByClassName('postbutton')[0];
@@ -743,8 +800,8 @@
 					imgwrapp.appendChild(imginnerwrapp);
 				body.appendChild(imgwrapp);
 				var kommerpeople = document.createElement('div');
-					kommerpeople.setAttribute('class', 'kommerwrapper');
-					kommerpeople.setAttribute('style', 'display: none;');
+					kommerpeople.setAttribute('class', 'kommerwrapper slider closed');
+//					kommerpeople.setAttribute('style', 'display: none;');
 					var tableextra = document.createElement('table');
 						tableextra.setAttribute('class', 'tablewidth');
 						var tabletr = document.createElement('tr');
@@ -815,8 +872,7 @@
 					tableextra.appendChild(tabletr);
 				body.appendChild(tableextra);
 				var kommentarwrapper = document.createElement('div');
-					kommentarwrapper.setAttribute('class', 'kommentarwrapper');
-					kommentarwrapper.setAttribute('style', 'display: none;');
+					kommentarwrapper.setAttribute('class', 'kommentarwrapper slider closed');
 					var kommentholder = document.createElement('span');
 						kommentholder.setAttribute('class', 'kommentholder');
 					kommentarwrapper.appendChild(kommentholder);
@@ -847,12 +903,7 @@
 		};
 	};
 	function openkommer(id){
-		var wrapper = document.getElementById(id).getElementsByClassName('kommerwrapper')[0];
-		if(!wrapper.getAttribute('style')){
-			wrapper.setAttribute('style', 'display: none;');
-		}else{
-			wrapper.removeAttribute('style');
-		};
+		showhide(id, 'kommerwrapper', 'false', 'false');
 	};
 	function makeSVG(viewbox, d){
 		var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
@@ -873,13 +924,7 @@
 		text.value = '';
 	};
 	function hideshowkomment(id){
-		var wrapper = document.getElementById(id).getElementsByClassName('kommentarwrapper')[0];
-		if(!wrapper.getAttribute('style')){
-			wrapper.setAttribute('style', 'display: none;');
-		}else{
-			wrapper.removeAttribute('style');
-			wrapper.getElementsByClassName('kommentartextarea')[0].focus();
-		};
+		showhide(id, 'kommentarwrapper', 'kommentartextarea', 'false');
 	};
 	socket.on('nykommentar', function (data) {
 		var button = document.getElementById(data.id).getElementsByClassName('kommentnummer')[0];
@@ -1028,12 +1073,18 @@
 				allnooffline[i].setAttribute('class', allnooffline[i].getAttribute('class') + ' disabled');
 				allnooffline[i].removeAttribute('onclick');
 			};
+			if(!allnooffline[i].getAttribute('onchange')){}else{
+				allnooffline[i].setAttribute('data-onchange', allnooffline[i].getAttribute('onchange'));
+				allnooffline[i].setAttribute('disabled', 'disabled');
+				allnooffline[i].setAttribute('class', allnooffline[i].getAttribute('class') + ' disabled');
+				allnooffline[i].removeAttribute('onchange');
+			};
 		};
 	};
 	socket.on('disconnect', function () {
 		error('error', 'Du tappade kopplingen till servern.');
 		promptclose();
-		hideaddreaid();
+		hideaddreaid('hide');
 		disableonclick();
 		aterkopplad = 'true';
 	});
@@ -1044,6 +1095,12 @@
 				allnooffline[i].setAttribute('onclick', allnooffline[i].getAttribute('data-onclick'));
 				allnooffline[i].setAttribute('class', allnooffline[i].getAttribute('class').replace(' disabled', ''));
 				allnooffline[i].removeAttribute('data-onclick');
+				allnooffline[i].removeAttribute('disabled');
+			};
+			if(!allnooffline[i].getAttribute('data-onchange')){}else{
+				allnooffline[i].setAttribute('onchange', allnooffline[i].getAttribute('data-onchange'));
+				allnooffline[i].setAttribute('class', allnooffline[i].getAttribute('class').replace(' disabled', ''));
+				allnooffline[i].removeAttribute('data-onchange');
 				allnooffline[i].removeAttribute('disabled');
 			};
 		};
