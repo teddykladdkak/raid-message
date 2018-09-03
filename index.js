@@ -5,6 +5,7 @@ const path = require("path");
 var fs = require('fs');
 const makeDir = require('make-dir');
 var prompt = require('prompt');
+var colors = require('colors/safe');
 
 //Datum funktion.
 function addzero(number){if(number <= 9){return "0" + number;}else{return number;};};
@@ -49,7 +50,7 @@ if (fs.existsSync(__dirname + '/admin.json')) {
 	prompt.get(['adminlösenord'], function (err, result) {
 		var admin = {"password": result.adminlösenord};
 		fs.writeFileSync(__dirname + '/admin.json', JSON.stringify(admin, null, ' '));
-		console.log('Lösenord inställt! Kan ändras i "admin.json"');
+		console.log(colors.green('Lösenord inställt! Kan ändras i "admin.json"'));
 	});
 };
 if (fs.existsSync(__dirname + '/public/raids.json')) {
@@ -97,7 +98,7 @@ function sendnotification(data){
 	for (var i = subscribers.length - 1; i >= 0; i--) {
 		webpush
 			.sendNotification(subscribers[i].subscription, payload)
-			.catch(err => console.error(err));
+			.catch(err => console.log(colors.red('Subscriber nr: ' + i + ' are unsuscribed.')));
 	};
 };
 app.use(bodyParser.json());
@@ -164,7 +165,6 @@ io.sockets.on('connection', function (socket, username) {
 		if(dataraids.date == getDate().datum){}else{
 			fs.writeFileSync(__dirname + '/public/raids.json', JSON.stringify({"date": getDate().datum, "raiddata": []}, null, ' '));
 			dataraids = {"date": getDate().datum, "raiddata": []};
-			console.log('Nytt datum, "raids.json" tas bort.');
 			socket.emit('loadjson', '?');
 		};
 	}, 3600000);
@@ -226,7 +226,6 @@ io.sockets.on('connection', function (socket, username) {
 					};
 				}else{
 					if(data.todo == '-'){
-						console.log(dataraids.raiddata[i].kommer[exist].antal);
 						if(dataraids.raiddata[i].kommer[exist].antal <= 1){
 							dataraids.raiddata[i].kommer.splice(exist, 1);
 						}else{

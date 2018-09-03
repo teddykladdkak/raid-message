@@ -392,22 +392,31 @@
 		imgdesaturate: 60, //0-255
 		confidence: 70, //0-100
 		sprak: 'swe',
-		nopost: 'Inga raider reggade ännu idag.. Blir du den första?',
-		loadjson: 'Du har varit bortkopplad från server, raid laddas om.'
-	};//showhide('addraid', 'false', 'false', 'false');
+		messages: {
+			nopost: 'Inga raider registrerade idag.. Blir du den första?',
+			loadjson: 'Du har varit bortkopplad från server, raid laddas om.',
+			online: 'Du är kopplad till servern.'
+		}
+	};
 	function showhide(id, wrapperclass, fokus, todo){
 		if(!wrapperclass || wrapperclass == 'false'){
 			var wrapper = document.getElementById(id);
 		}else{
 			var wrapper = document.getElementById(id).getElementsByClassName(wrapperclass)[0];
 		}
-		if(wrapper.getAttribute('class').includes('closed') || !todo == 'false'){
-			wrapper.setAttribute('class', wrapper.getAttribute('class').replace(' closed', ''));
+		if(todo == 'hide'){
+			wrapper.setAttribute('class', wrapper.getAttribute('class') + ' closed');
+		}else if(todo == 'show'){
+			wrapper.setAttribute('class', wrapper.getAttribute('class').replace(/ closed/g, ''));
 			if(!fokus || fokus == 'false'){}else{
 				document.getElementById(id).getElementsByClassName(fokus)[0].focus();
 			};
-		}else{
-			wrapper.setAttribute('class', wrapper.getAttribute('class') + ' closed');
+		}else if(todo == 'false'){
+			if(wrapper.getAttribute('class').includes('closed')){
+				wrapper.setAttribute('class', wrapper.getAttribute('class').replace(/ closed/g, ''));
+			}else{
+				wrapper.setAttribute('class', wrapper.getAttribute('class') + ' closed');
+			};
 		};
 	};
 	function rensaochsakra(vari){
@@ -571,15 +580,11 @@
 		document.getElementById('promptback').value = back;
 		document.getElementById('prompt').setAttribute('class', 'visible');
 		document.getElementById('promptbg').setAttribute('class', 'visible');
-		//document.getElementById('prompt').removeAttribute('style');
-		//document.getElementById('promptbg').removeAttribute('style');
 		if(inputtodo == 'false'){}else{
 			document.getElementById('promptinput').focus();
 		};
 	};
 	function promptclose(){
-		//document.getElementById('prompt').setAttribute('style', 'display: none;');
-		//document.getElementById('promptbg').setAttribute('style', 'display: none;');
 		document.getElementById('prompt').setAttribute('class', 'hidden');
 		document.getElementById('promptbg').setAttribute('class', 'hidden');
 		removechilds(document.getElementById('prompttext'));
@@ -612,7 +617,6 @@
 			}else if(todo == 'edit'){
 				element.blur();
 			}else if(todo == 'kommentsend'){
-				console.log('Skriver automatiskt med följande id: ' + id);
 				skickakommentar(id);
 			}else if(todo == 'ok'){
 				document.getElementById('promptaction').click();
@@ -633,8 +637,7 @@
 			button.setAttribute('onclick', 'hideaddreaid();');
 			button.setAttribute('viewBox', '0 0 512 512');
 			button.firstChild.setAttribute('d', 'M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z');
-		//document.getElementById('addraid').removeAttribute('style');
-		showhide('addraid', 'false', 'false', 'false');
+		showhide('addraid', 'false', 'false', 'show');
 		document.getElementById('raidimage').click();
 	};
 	function hideaddreaid(){
@@ -648,8 +651,10 @@
 			button.setAttribute('onclick', 'addraid(this);');
 			button.setAttribute('viewBox', '0 0 448 512');
 			button.firstChild.setAttribute('d', 'M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-32 252c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92H92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z');
-		//document.getElementById('addraid').setAttribute('style', 'display: none;');
 		showhide('addraid', 'false', 'false', 'hide');
+		document.getElementById('raidimage').blur();
+		document.getElementById('raidtid').blur();
+		document.getElementById('raidkommentar').blur();
 	};
 	function postraid(){
 		var postbutton = document.getElementsByClassName('postbutton')[0];
@@ -670,7 +675,7 @@
 			var location = {"longitud": postbutton.getAttribute('data-longitud'), "latitud": postbutton.getAttribute('data-latitud')};
 		};
 		socket.emit('postraid', {"raidimage": document.getElementById('raidimagepreview').src, "raidtid": document.getElementById('raidtid').value, raidkommentar: document.getElementById('raidkommentar').value, "exraid": exraid, "location": location, "gymnamn": gymnamn, "icon": icon});
-		hideaddreaid(document.getElementById('buttonlaggtillraid'));
+		hideaddreaid();
 	};
 	function changeuser(){
 		localStorage.removeItem('userdata');
@@ -684,10 +689,8 @@
 		element.setAttribute('class', 'chosenteam');
 	};
 	var geturl = window.location.href.replace('http://', '').replace('https://', '').split('/')[0];
-	//Lyssnar om server säger något
 	var socket = io.connect(geturl);
-	function load(){
-	};
+	function load(){};
 	function addinfo(message){
 		var wrapper = document.getElementById('posts');
     		var noposts = document.createElement('p');
@@ -698,14 +701,14 @@
 	};
 	function getraids(){
 		removechilds(document.getElementById('posts'));
-		addinfo(config.loadjson);
+		addinfo(config.messages.loadjson);
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
 		    if (this.readyState == 4 && this.status == 200) {
 		    	removechilds(document.getElementById('posts'));
 		        var data = JSON.parse(this.responseText);
 		        if(!data.raiddata){}else if(data.raiddata.length == 0){
-		        	addinfo(config.nopost);
+		        	addinfo(config.messages.nopost);
 		        }else{
 					for (var i = data.raiddata.length - 1; i >= 0; i--) {
 						addpost(data.raiddata[i].username, data.raiddata[i].team, data.raiddata[i].raidtid, data.raiddata[i].raidkommentar, data.raiddata[i].raidimage, data.raiddata[i].kommer, data.raiddata[i].kommentar, data.raiddata[i].id, 'false', data.raiddata[i].exraid, data.raiddata[i].location);
@@ -996,7 +999,7 @@
 		var wrapper = document.getElementById(id);
 			wrapper.parentElement.removeChild(wrapper);
 		if(document.getElementsByClassName('postbody').length == 0){
-			addinfo(config.nopost);
+			addinfo(config.messages.nopost);
 		};
 	});
 	function edit(id, username, team, element){
@@ -1084,7 +1087,7 @@
 	socket.on('disconnect', function () {
 		error('error', 'Du tappade kopplingen till servern.');
 		promptclose();
-		hideaddreaid('hide');
+		hideaddreaid();
 		disableonclick();
 		aterkopplad = 'true';
 	});
@@ -1110,7 +1113,7 @@
 			document.getElementById('registrera').removeAttribute('style');
 		}else{
 			if(aterkopplad == 'true'){
-				error('good', 'Du är kopplad till servern.');
+				error('good', config.messages.online);
 				aterkopplad = 'false';
 			};
 			socket.emit('login', localStorage.getItem('userdata'));
