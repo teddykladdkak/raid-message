@@ -97,6 +97,30 @@ node .
 8. Choose and type admin password, enter to add.
 9. Use one of the links as shown
 
+## Thanks to
+Name | Description | Link
+--- | --- | ---
+FontAwsome | Library of icons | [fontawesome.com](https://fontawesome.com/)
+Express | Applikation framework | [expressjs.com](https://expressjs.com/)
+NodeJS | Server software | [nodejs.org](https://nodejs.org/en/)
+PokemonGoMap | Gym information | [pokemongomap.info](https://www.pokemongomap.info/)
+Socket.io | Communications line between client and server | [socket.io](https://socket.io/)
+Web-Push | Helps with webnotification | [npmjs.com](https://www.npmjs.com/package/web-push)
+Body-Parser | Help server read request body | [npmjs.com](https://www.npmjs.com/package/body-parser)
+Path | Library to find root | [npmjs.com](https://www.npmjs.com/package/path)
+Make-Dir | Easy way to create new folders | [npmjs.com](https://www.npmjs.com/package/make-dir)
+Prompt | Adds prompt to console at server start | [npmjs.com](https://www.npmjs.com/package/prompt)
+Colors | Adds pretty colors in console | [npmjs.com](https://www.npmjs.com/package/colors)
+RandomID | Always a new random string | [stackoverflow.com](https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript)
+ShareIcon | Pokémon Go SVG Icons | [shareicon.net](https://www.shareicon.net/)
+iOS-ImageFile-Megapixel | Easy way to make posted images smaller in size | [github.com](https://github.com/stomita/ios-imagefile-megapixel)
+Tesseract | Image to text | [tesseract.projectnaptha.com](http://tesseract.projectnaptha.com/)
+HTML5CanvasTutorials | Help with image processing | [html5canvastutorials.com](https://www.html5canvastutorials.com/)
+GeoFenceGenerator | Get geofence for areas | [codepen.io](https://codepen.io/jennerpalacios/full/mWWVeJ)
+PokemonGo.Wikia | Icon for the application | [pokemongo.wikia.com](http://pokemongo.wikia.com/wiki/Raid_Boss)
+Markdown-Cheatsheet | Made this readme possible | [github.com](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
+_Hopefully, this will inculcate all sources for this project._
+
 ## Todo
 * Test and debug image to text.
 * Load all files from server.. (After debug)
