@@ -80,7 +80,7 @@ cd [rootlink to folder]
 ```
 4. Download respetory
 ```
-git https://github.com/teddykladdkak/raid-message.git
+git clone https://github.com/teddykladdkak/raid-message.git
 ```
 5. Go into the "Raid Message" folder.
 ```
