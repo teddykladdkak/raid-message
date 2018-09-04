@@ -10,6 +10,7 @@ When the server is started for the first time, you will be given the option to e
 
 Specific IP port is change in variable "config" in "/index.js".
 
+## Customize
 ### Files created at first launch of server
 Link | Stores
 --- | ---
@@ -18,9 +19,9 @@ Link | Stores
 "/subscribers.json" | Users that have approved notifications.
 "/notificationPrivateKey.json" | PrivateKey for the Web notification API.
 "/public/script/notificationPublicKey.js" | PublicKey for the Web notification API.
-"/public/script/geofence.js" | Coordinates that ring in specific areas.
+"/public/script/geofence.js" | Geofence coordinates of specific areas.
 
-## Add Pokémon Gyms
+### Add Pokémon Gyms
 In my case I have in another project created a list of all the Pékemon Go gyms in my city. In order for the code to read which gym the user has sent a screen shot on, it must be compared to the list of all gyms in your city.
 
 To get this information you can find it at: [PokemonGoMap](https://www.pokemongomap.info/).
@@ -43,12 +44,12 @@ var gyms = [
 			"longitud": "55.705365693215",	//Example
 			"latitud": "13.169667720795"	//Example
 		},
-		"exraid": false						//Example
+		"exraid": false				//Example
 	},
 	.........
 ];
 ```
-## Make Geofence
+### Make Geofence
 This is not a must if the page is run for a smaller city, but if it is running in a larger city, it may be useful for users to filter the posts. In order for this to work, the city must be divided into areas. The code uses Geofence to tag the posts for which areas the gym belongs to.
 
 The easiest way to get the geofence coordinates is to go to [GeoFenceGenerator](https://codepen.io/jennerpalacios/full/mWWVeJ).
@@ -61,9 +62,9 @@ Change "/public/script/geofence.json" to your areas and coordinates, with folowi
 		"rubrik": "[name of the tagg that your users will see]",
 		"coord": [[longitude,latitude], ..... ]
 	},{
-		"tagg": "valkarra",		//Example
-		"rubrik": "Valkärra",		//Example
-		"coord": [[55.74731139809886,13.180714405888466], ..... ]		//Example
+		"tagg": "valkarra",					//Example
+		"rubrik": "Valkärra",					//Example
+		"coord": [[55.74731139809886,13.180714405888466], ..... ]	//Example
 	},
 	............
 ]
