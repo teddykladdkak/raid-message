@@ -83,7 +83,6 @@ function inside(point, vs) {
     };
     return inside;
 };
-//https://codepen.io/jennerpalacios/full/mWWVeJ
 function checkifinside(longitude, latitude){
 	var geofence = JSON.parse(fs.readFileSync(__dirname + '/public/script/geofence.json', 'utf8'));
 	var tags = [];

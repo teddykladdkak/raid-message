@@ -1,4 +1,4 @@
-# Raid Message ![alt text](https://raw.githubusercontent.com/teddykladdkak/raid-message/master/public/ico/icon48x48.png "Logo for Raid Message")
+# ![alt text](https://raw.githubusercontent.com/teddykladdkak/raid-message/master/public/ico/icon48x48.png "Logo for Raid Message") Raid Message
 ## What is this!
 This project aims to replace Facebook, Messenger, Discord, etc. in the pursuit of the next Raid in Pokémon Go. It is currently at the earliest stage of development.
 
@@ -18,6 +18,56 @@ Link | Stores
 "/subscribers.json" | Users that have approved notifications.
 "/notificationPrivateKey.json" | PrivateKey for the Web notification API.
 "/public/script/notificationPublicKey.js" | PublicKey for the Web notification API.
+"/public/script/geofence.js" | Coordinates that ring in specific areas.
+
+## Add Pokémon Gyms
+In my case I have in another project created a list of all the Pékemon Go gyms in my city. In order for the code to read which gym the user has sent a screen shot on, it must be compared to the list of all gyms in your city.
+
+To get this information you can find it at: [PokemonGoMap](https://www.pokemongomap.info/).
+
+You need to create a ".js" file and change "https: //gymlund.tk ..." in "index.html" to your list.
+
+The code is like below:
+```
+var gyms = [
+	{
+		"namn": "[Name of gym]",
+		"location": {
+			"longitud": "[Longitude]",
+			"latitud": "[Latitude]"
+		},
+		"exraid": [true or false]
+	},{
+		"namn": "Papegojelyckans lekplats",	//Example
+		"location": {
+			"longitud": "55.705365693215",	//Example
+			"latitud": "13.169667720795"	//Example
+		},
+		"exraid": false						//Example
+	},
+	.........
+];
+```
+## Make Geofence
+This is not a must if the page is run for a smaller city, but if it is running in a larger city, it may be useful for users to filter the posts. In order for this to work, the city must be divided into areas. The code uses Geofence to tag the posts for which areas the gym belongs to.
+
+The easiest way to get the geofence coordinates is to go to [GeoFenceGenerator](https://codepen.io/jennerpalacios/full/mWWVeJ).
+
+Change "/public/script/geofence.json" to your areas and coordinates, with folowing structure:
+```
+[
+	{
+		"tagg": "[id of tagg (only a-z) and small letters]",
+		"rubrik": "[name of the tagg that your users will see]",
+		"coord": [[longitude,latitude], ..... ]
+	},{
+		"tagg": "valkarra",		//Example
+		"rubrik": "Valkärra",		//Example
+		"coord": [[55.74731139809886,13.180714405888466], ..... ]		//Example
+	},
+	............
+]
+```
 
 ## How to run
 1. Open Terminal or Command Prompt.

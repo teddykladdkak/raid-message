@@ -647,12 +647,7 @@
 						debugconf = (debugconf + possible[i].confidence) / 2;	//Ta bort när allt är stabilt
 						winnerconf = possible[i].confidence;
 						var winnerarray = possible[i];
-					}
-					/*if(winnerconf <= possible[i].confidence){
-						debugconf = (debugconf + possible[i].confidence) / 2;	//Ta bort när allt är stabilt
-						winnerconf = possible[i].confidence;
-						var winnerarray = possible[i];
-					};*/
+					};
 				};
 			};
 			if(winnerarray == ''){}else{
@@ -868,7 +863,6 @@
 				var data = JSON.parse(this.responseText);
 				if(!data){}else if(data.length == 0){}else{
 					for (var i = data.length - 1; i >= 0; i--) {
-						//filterareas<label><input type="checkbox" name="lth" onclick="filterarea();">LTH</label>
 						var wrapper = document.getElementById('filterareas');
 							var label = document.createElement('label');
 								var input = document.createElement('input');
@@ -976,7 +970,6 @@
 				body.appendChild(imgwrapp);
 				var kommerpeople = document.createElement('div');
 					kommerpeople.setAttribute('class', 'kommerwrapper slider closed');
-//					kommerpeople.setAttribute('style', 'display: none;');
 					var tableextra = document.createElement('table');
 						tableextra.setAttribute('class', 'tablewidth');
 						var tabletr = document.createElement('tr');
