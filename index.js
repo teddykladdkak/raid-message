@@ -161,8 +161,10 @@ app.post("/removesubscribe", (req, res) => {
 	var todo = 'true';
 	console.log(data);
 	for (var i = subscribers.length - 1; i >= 0; i--) {
-		if(subscribers[i].subscription.keys.p256dh == data.subscription.keys.p256dh){
-			subscribers.splice(i, 1);
+		if(!data.subscription){}else{
+			if(subscribers[i].subscription.keys.p256dh == data.subscription.keys.p256dh){
+				subscribers.splice(i, 1);
+			};
 		};
 	};
 	fs.writeFileSync(__dirname + '/subscribers.json', JSON.stringify({"data": subscribers}, null, ' '));

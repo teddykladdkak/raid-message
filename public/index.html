@@ -98,7 +98,7 @@
 			max-width: 300px;
 			width: 100%;
 		}
-		.postbody, #addraid, #registrera, #settings {
+		.postbody, #addraid, #registrera, #settings, #debug {
 			max-width: 400px;
 			margin: 20px auto;
 			padding: 5px;
@@ -317,6 +317,9 @@
 		#settings table.button td {
 			padding: 5px;
 		}
+		input {
+			max-width: 100%;
+		}
 	</style>
 	<style type="text/css" id="geoposts"></style>
 </head>
@@ -360,16 +363,11 @@
 				</tr>
 			</table>
 		</div>
-		<div id="addraid" class="slider closed">
-			<p>Skärmdump</p>
-			<input type="file" id="raidimage"class="nooffline" onchange="makesmallimg(this.files[0]);makeicon(this.files[0]);imgtotext(this.files[0]);"><br/>
-			<div class="center"><div class="wrapperraidimagepreview"><img src="img/ingenbild.png" id="raidimagepreview"></div></div>
-			<p>Föreslagen tid</p>
-			<input type="time" id="raidtid">
-			<p>Kommentar</p>
-			<textarea id="raidkommentar" onkeydown="checkkey(event, this, 'postraid');" onkeyup="this.value = rensaochsakra(this.value);"></textarea><br/>
-			<svg onclick="postraid();" class="postbutton fributton nooffline" aria-hidden="true" class="svg" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path></svg>
-			<svg onclick="hideaddreaid();" aria-hidden="true" class="fributton nooffline" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z"></path></svg>
+		<div id="debug" style="display: none;">
+			<canvas id="iconCanvas" width="75" height="75" ></canvas>
+			<canvas id="myCanvas" width="700" height="70" ></canvas>
+			<textarea id="debugcode"></textarea>
+			<input type="button" value="Göm" onclick="document.getElementById('debug').setAttribute('style', 'display: none;');">
 		</div>
 		<div id="settings" class="slider closed">
 			<table class="button">
@@ -401,6 +399,28 @@
 			<label><input type="checkbox" name="vaster" onclick="filterarea();">Väster</label>
 			<label><input type="checkbox" name="klostergarden" onclick="filterarea();">Klostergården</label>
 			<label><input type="checkbox" name="centrum" onclick="filterarea();">Centrum</label>
+			<br/>
+			<table class="button" onclick="document.getElementById('debug').removeAttribute('style');">
+				<tr>
+					<td>
+						<svg aria-hidden="true" class="svg" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M 536 264 h -64 v -94.059 l 40.971 -40.971 c 9.372 -9.373 9.372 -24.569 0 -33.941 c -9.373 -9.372 -24.568 -9.372 -33.941 0 L 438.059 136 H 425 C 425 60.87 364.091 0 289 0 c -75.13 0 -136 60.909 -136 136 h -15.059 l -40.97 -40.971 c -9.373 -9.372 -24.568 -9.372 -33.941 0 c -9.373 9.373 -9.373 24.569 0 33.941 L 104 169.941 V 264 H 40 c -13.255 0 -24 10.745 -24 24 s 10.745 24 24 24 h 64 v 24 c 0 29.275 7.91 56.733 21.694 80.365 L 71.029 471.03 c -9.373 9.373 -9.373 24.568 0 33.941 c 9.371 9.372 24.568 9.373 33.941 0 l 51.029 -51.029 C 184.482 480.046 222.411 496 264 496 h 48 c 41.589 0 79.518 -15.954 108.001 -42.058 l 51.029 51.029 c 9.372 9.372 24.568 9.373 33.941 0 c 9.372 -9.373 9.372 -24.568 0 -33.941 l -54.665 -54.665 C 464.09 392.734 472 365.275 472 336 v -24 h 64 c 13.255 0 24 -10.745 24 -24 s -10.745 -24 -24 -24 Z M 289 48 c 48.601 0 88 39.399 88 88 H 201 c 0 -48.601 39.399 -88 88 -88 Z m 23 400 V 260 c 0 -6.627 -5.373 -12 -12 -12 h -24 c -6.627 0 -12 5.373 -12 12 v 188 c -61.757 0 -112 -50.243 -112 -112 V 184 h 272 v 152 c 0 61.757 -50.243 112 -112 112 Z"></path></svg>
+					</td>
+					<td>
+						Debug
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="addraid" class="slider closed">
+			<p>Skärmdump</p>
+			<input type="file" id="raidimage"class="nooffline" onchange="makesmallimg(this.files[0]);makeicon(this.files[0]);imgtotext(this.files[0]);"><br/>
+			<div class="center"><div class="wrapperraidimagepreview"><img src="img/ingenbild.png" id="raidimagepreview"></div></div>
+			<p>Föreslagen tid</p>
+			<input type="time" id="raidtid" onkeydown="checkkey(event, this, 'raidkommentar');">
+			<p>Kommentar</p>
+			<textarea id="raidkommentar" onkeydown="checkkey(event, this, 'postraid');" onkeyup="this.value = rensaochsakra(this.value);"></textarea><br/>
+			<svg onclick="postraid();" class="postbutton fributton nooffline" aria-hidden="true" class="svg" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path></svg>
+			<svg onclick="hideaddreaid();" aria-hidden="true" class="fributton nooffline" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z"></path></svg>
 		</div>
 		<div id="posts">
 			
@@ -413,13 +433,6 @@
 			<span id="wrapperpromptinput"></span>
 			<input type="button" id="promptaction" value=""><input type="button" id="promptback" onclick="promptclose();" value="Avbryt">
 		</span>
-	</div>
-	<span onclick="document.getElementById('debug').removeAttribute('style');">Debug</span>
-	<div id="debug" style="display: none;">
-		<canvas id="iconCanvas" width="75" height="75" ></canvas>
-		<canvas id="myCanvas" width="700" height="60" ></canvas>
-		<textarea id="debugcode"></textarea>
-		<input type="button" value="Göm" onclick="document.getElementById('debug').setAttribute('style', 'display: none;');">
 	</div>
 <script src="socket.io/socket.io.js"></script>
 <script src="script/megapix-image.js"></script>
@@ -533,7 +546,10 @@
 				console.log('Error: ', error);
 			};
 	};
-	function imgtotext(file){
+	function imgtotext(file, number){
+		if(!number){
+			var number = 0;
+		};
 		var canvasid = 'myCanvas';
 		if(!file){notimg();return false;}else if(file.type == 'image/png' || file.type == 'image/jpeg'){}else{notimg();return false;};
 		document.getElementById('raidimagepreview').setAttribute('class', 'loading');
@@ -560,7 +576,7 @@
 					            g = data[i+1],
 					            b = data[i+2];
 
-					        if(r <= config.imgdesaturate && g <= config.imgdesaturate && b <= config.imgdesaturate){ 
+					        if(r <= (config.imgdesaturate + number) && g <= (config.imgdesaturate + number) && b <= (config.imgdesaturate + number)){ 
 					        }else{
 					            data[i] = newColor.r;
 					            data[i+1] = newColor.g;
@@ -623,11 +639,16 @@
 				var winnerarray = '';
 				var debugconf = 0;												//Ta bort när allt är stabilt
 				for (var i = possible.length - 1; i >= 0; i--) {
-					if(winnerconf <= possible[i].confidence){
+					if(result.text.toLowerCase().includes(possible[i].namn.toLowerCase())){
 						debugconf = (debugconf + possible[i].confidence) / 2;	//Ta bort när allt är stabilt
 						winnerconf = possible[i].confidence;
 						var winnerarray = possible[i];
-					};
+					}
+					/*if(winnerconf <= possible[i].confidence){
+						debugconf = (debugconf + possible[i].confidence) / 2;	//Ta bort när allt är stabilt
+						winnerconf = possible[i].confidence;
+						var winnerarray = possible[i];
+					};*/
 				};
 			};
 			if(winnerarray == ''){}else{
@@ -642,12 +663,31 @@
 			for (var i = possible.length - 1; i >= 0; i--) {
 				debugtext.push(possible[i].namn)
 			};
-			document.getElementById('debugcode').value = 'Winner: "' + winnerarray.namn + '". Before selecting winner: ' + possible.length + ' st. Confidence over all: ' + debugconf + ', and winners confidence: ' + winnerconf + ' ["' + debugtext.join('", "') + '"]';
-			document.getElementById('raidimagepreview').removeAttribute('class');
-			enableonclick();
+			if(!winnerarray.namn){
+				redoimgtotext();
+			}else{
+				document.getElementById('debugcode').value = 'Number of retry: ' + numberofretry + ', Winner: "' + winnerarray.namn + '". Before selecting winner: ' + possible.length + ' st. Confidence over all: ' + debugconf + ', and winners confidence: ' + winnerconf + ' ["' + debugtext.join('", "') + '"]';
+				numberofretry = 0;
+				enableonclick();
+				document.getElementById('raidimagepreview').removeAttribute('class');
+			};
 			/*Ta bort när allt är stabilt slut*/
 		})
     };
+    var numberofretry = 0;
+    function redoimgtotext(){
+    	numberofretry = numberofretry + 1;
+    	console.log(numberofretry);
+    	console.log(config.imgdesaturate + numberofretry * 5);
+    	console.log((config.imgdesaturate + numberofretry * 5) >= 255);
+    	if((config.imgdesaturate + numberofretry * 5) >= 255 ){
+    		document.getElementById('debugcode').value = 'Diden´t find a match... :\'\(';
+			enableonclick();
+    		document.getElementById('raidimagepreview').removeAttribute('class');
+    	}else{
+    		imgtotext(document.getElementById('raidimage').files[0], numberofretry * 5)
+    	};
+    }
 	function promptopen(message, inputtodo, func, active, back, data){
 		if(inputtodo == 'false'){}else{
 			var inputwrapper = document.getElementById('wrapperpromptinput');
@@ -712,6 +752,8 @@
 				skickakommentar(id);
 			}else if(todo == 'ok'){
 				document.getElementById('promptaction').click();
+			}else if(todo == 'raidkommentar'){
+				document.getElementById('raidkommentar').focus();
 			};
 			event.preventDefault();
 			e.preventDefault();

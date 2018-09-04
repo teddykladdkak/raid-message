@@ -47,8 +47,6 @@ node .
 9. Use one of the links as shown
 
 ## Todo
-* If image to text cant read, redo and make changes to the settings until success or fail.
-* Support users that dont take screenshot of the egg or raidpokemon.
 * Test and debug image to text.
 * Load all files from server.. (After debug)
 * 29/8 ~~Give the user information if no raids are posted (instead of a blank page).~~
@@ -74,3 +72,5 @@ node .
 * 4/9 ~~In settings allow users to turn off or turn on notifications.~~
 * 4/9 ~~Only notifications from selected areas.~~
 * 4/9 ~~Only load posts from selected areas.~~
+* 4/9 ~~Stability in image API.~~
+* 4/9 ~~"Image to text" function will restart and change contrast until it finds a match or reach max desaturation.~~
