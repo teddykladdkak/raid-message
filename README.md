@@ -62,8 +62,8 @@ Change "/public/script/geofence.json" to your areas and coordinates, with folowi
 		"rubrik": "[name of the tagg that your users will see]",
 		"coord": [[longitude,latitude], ..... ]
 	},{
-		"tagg": "valkarra",					//Example
-		"rubrik": "Valkärra",					//Example
+		"tagg": "valkarra",						//Example
+		"rubrik": "Valkärra",						//Example
 		"coord": [[55.74731139809886,13.180714405888466], ..... ]	//Example
 	},
 	............
