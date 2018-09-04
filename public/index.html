@@ -244,13 +244,13 @@
 		}
 		#message {
 			position: fixed;
-		    left: 0px;
-		    top: 0px;
-		    width:100%;
-		    margin: 0px;
-		    padding: 5px;
+			left: 0px;
+			top: 0px;
+			width:100%;
+			margin: 0px;
+			padding: 5px;
 
-		    z-index: 999;
+			z-index: 999;
 
 			font-weight: bold;
 			text-align: center;
@@ -260,8 +260,8 @@
 		}
 		#message.show {
 			display: block;
-		    -webkit-animation: fadeinout 3s linear forwards;
-		    animation: fadeinout 3s linear forwards;
+			-webkit-animation: fadeinout 3s linear forwards;
+			animation: fadeinout 3s linear forwards;
 		}
 			@-webkit-keyframes fadeinout {
 			  0%,100% { opacity: 0; }
@@ -320,6 +320,9 @@
 		input {
 			max-width: 100%;
 		}
+		#filterareas label {
+			display: inline-block;
+		}
 	</style>
 	<style type="text/css" id="geoposts"></style>
 </head>
@@ -370,10 +373,10 @@
 			<input type="button" value="Göm" onclick="document.getElementById('debug').setAttribute('style', 'display: none;');">
 		</div>
 		<div id="settings" class="slider closed">
-			<table class="button">
+			<table class="button" onclick="changeuser();">
 				<tr>
 					<td>
-						<svg onclick="changeuser();" aria-hidden="true" class="svg" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M497 273L329 441c-15 15-41 4.5-41-17v-96H152c-13.3 0-24-10.7-24-24v-96c0-13.3 10.7-24 24-24h136V88c0-21.4 25.9-32 41-17l168 168c9.3 9.4 9.3 24.6 0 34zM192 436v-40c0-6.6-5.4-12-12-12H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h84c6.6 0 12-5.4 12-12V76c0-6.6-5.4-12-12-12H96c-53 0-96 43-96 96v192c0 53 43 96 96 96h84c6.6 0 12-5.4 12-12z"></path></svg>
+						<svg aria-hidden="true" class="svg" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M497 273L329 441c-15 15-41 4.5-41-17v-96H152c-13.3 0-24-10.7-24-24v-96c0-13.3 10.7-24 24-24h136V88c0-21.4 25.9-32 41-17l168 168c9.3 9.4 9.3 24.6 0 34zM192 436v-40c0-6.6-5.4-12-12-12H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h84c6.6 0 12-5.4 12-12V76c0-6.6-5.4-12-12-12H96c-53 0-96 43-96 96v192c0 53 43 96 96 96h84c6.6 0 12-5.4 12-12z"></path></svg>
 					</td>
 					<td>
 						Logga ut
@@ -392,14 +395,8 @@
 				</tr>
 			</table>
 			<h2>Filtrera område</h2>
-			<label><input type="checkbox" name="lth" onclick="filterarea();">LTH</label>
-			<label><input type="checkbox" name="linero" onclick="filterarea();">Linero</label>
-			<label><input type="checkbox" name="ostratorn" onclick="filterarea();">Östra torn</label>
-			<label><input type="checkbox" name="norrafaladen" onclick="filterarea();">Norra Fäladen</label>
-			<label><input type="checkbox" name="vaster" onclick="filterarea();">Väster</label>
-			<label><input type="checkbox" name="klostergarden" onclick="filterarea();">Klostergården</label>
-			<label><input type="checkbox" name="centrum" onclick="filterarea();">Centrum</label>
-			<br/>
+			<div id="filterareas"></div>
+			<br/><br/>
 			<table class="button" onclick="document.getElementById('debug').removeAttribute('style');">
 				<tr>
 					<td>
@@ -564,28 +561,28 @@
 				imageObj.onload = function() {
 					context.drawImage(imageObj, -150, -80, 750, 1334);
 					var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-			        var data = imageData.data;
-			        var newColor = {r:255,g:255,b:255, a:255};
-			        for(var i = 0; i < data.length; i += 4) {
-			          data[i] = 255 - data[i];
-			          data[i + 1] = 255 - data[i + 1];
-			          data[i + 2] = 255 - data[i + 2];
-			        };
-					for (var i = 0, n = data.length; i <n; i += 4) {
-					    var r = data[i],
-					            g = data[i+1],
-					            b = data[i+2];
-
-					        if(r <= (config.imgdesaturate + number) && g <= (config.imgdesaturate + number) && b <= (config.imgdesaturate + number)){ 
-					        }else{
-					            data[i] = newColor.r;
-					            data[i+1] = newColor.g;
-					            data[i+2] = newColor.b;
-					            data[i+3] = newColor.a;
-					        };
+					var data = imageData.data;
+					var newColor = {r:255,g:255,b:255, a:255};
+					for(var i = 0; i < data.length; i += 4) {
+					  data[i] = 255 - data[i];
+					  data[i + 1] = 255 - data[i + 1];
+					  data[i + 2] = 255 - data[i + 2];
 					};
-			        context.putImageData(imageData, 0, 0);
-			        canvasToImg(canvasid);
+					for (var i = 0, n = data.length; i <n; i += 4) {
+						var r = data[i],
+								g = data[i+1],
+								b = data[i+2];
+
+							if(r <= (config.imgdesaturate + number) && g <= (config.imgdesaturate + number) && b <= (config.imgdesaturate + number)){ 
+							}else{
+								data[i] = newColor.r;
+								data[i+1] = newColor.g;
+								data[i+2] = newColor.b;
+								data[i+3] = newColor.a;
+							};
+					};
+					context.putImageData(imageData, 0, 0);
+					canvasToImg(canvasid);
 				};
 				imageObj.src = reader.result;
 			};
@@ -605,7 +602,7 @@
 		var ctx=canvas.getContext("2d");
 		var url = canvas.toDataURL();
 		Tesseract.recognize(url, {
-		    lang: config.sprak
+			lang: config.sprak
 		}).catch(err => console.error(err)).then(function(result){
 			console.log(result);													//Ta bort när allt är stabilt
 			var excludegyms = gyms;
@@ -673,21 +670,21 @@
 			};
 			/*Ta bort när allt är stabilt slut*/
 		})
-    };
-    var numberofretry = 0;
-    function redoimgtotext(){
-    	numberofretry = numberofretry + 1;
-    	console.log(numberofretry);
-    	console.log(config.imgdesaturate + numberofretry * 5);
-    	console.log((config.imgdesaturate + numberofretry * 5) >= 255);
-    	if((config.imgdesaturate + numberofretry * 5) >= 255 ){
-    		document.getElementById('debugcode').value = 'Diden´t find a match... :\'\(';
+	};
+	var numberofretry = 0;
+	function redoimgtotext(){
+		numberofretry = numberofretry + 1;
+		console.log(numberofretry);
+		console.log(config.imgdesaturate + numberofretry * 5);
+		console.log((config.imgdesaturate + numberofretry * 5) >= 255);
+		if((config.imgdesaturate + numberofretry * 5) >= 255 ){
+			document.getElementById('debugcode').value = 'Diden´t find a match... :\'\(';
 			enableonclick();
-    		document.getElementById('raidimagepreview').removeAttribute('class');
-    	}else{
-    		imgtotext(document.getElementById('raidimage').files[0], numberofretry * 5)
-    	};
-    }
+			document.getElementById('raidimagepreview').removeAttribute('class');
+		}else{
+			imgtotext(document.getElementById('raidimage').files[0], numberofretry * 5)
+		};
+	}
 	function promptopen(message, inputtodo, func, active, back, data){
 		if(inputtodo == 'false'){}else{
 			var inputwrapper = document.getElementById('wrapperpromptinput');
@@ -737,10 +734,10 @@
 	function makesmallimg(file){
 		if(!file){notimg();return false;}else if(file.type == 'image/png' || file.type == 'image/jpeg'){}else{notimg();return false;};
 		document.getElementById('raidimagepreview').src = 'img/laddar.png';
-	    var mpImg = new MegaPixImage(file);
-	    var resImg = document.getElementById('raidimagepreview');
-	    mpImg.render(resImg, { maxWidth: 300, maxHeight: 535, quality: 0.5 });
-	    document.getElementById('raidtid').focus();
+		var mpImg = new MegaPixImage(file);
+		var resImg = document.getElementById('raidimagepreview');
+		mpImg.render(resImg, { maxWidth: 300, maxHeight: 535, quality: 0.5 });
+		document.getElementById('raidtid').focus();
 	};
 	function checkkey(e, element, todo, id){
 		if (event.which == 13 || event.keyCode == 13) {
@@ -812,7 +809,8 @@
 		hideaddreaid();
 	};
 	function changeuser(){
-		localStorage.removeItem('userdata');
+		removeSubscribeNotification();
+		localStorage.clear();
 		location.reload();
 	};
 	function chooseteam(element){
@@ -825,34 +823,60 @@
 	var geturl = window.location.href.replace('http://', '').replace('https://', '').split('/')[0];
 	var socket = io.connect(geturl);
 	function load(){
-		loadfilterarea();
+		getareas();
 	};
 	function addinfo(message){
 		var wrapper = document.getElementById('posts');
-    		var noposts = document.createElement('p');
-    			noposts.setAttribute('id', 'nopost');
-    			var nopoststext = document.createTextNode(message);
-    			noposts.appendChild(nopoststext);
-    		wrapper.appendChild(noposts);
+			var noposts = document.createElement('p');
+				noposts.setAttribute('id', 'nopost');
+				var nopoststext = document.createTextNode(message);
+				noposts.appendChild(nopoststext);
+			wrapper.appendChild(noposts);
 	};
 	function getraids(){
 		removechilds(document.getElementById('posts'));
 		addinfo(config.messages.loadjson);
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
-		    if (this.readyState == 4 && this.status == 200) {
-		    	removechilds(document.getElementById('posts'));
-		        var data = JSON.parse(this.responseText);
-		        if(!data.raiddata){}else if(data.raiddata.length == 0){
-		        	addinfo(config.messages.nopost);
-		        }else{
+			if (this.readyState == 4 && this.status == 200) {
+				removechilds(document.getElementById('posts'));
+				var data = JSON.parse(this.responseText);
+				if(!data.raiddata){}else if(data.raiddata.length == 0){
+					addinfo(config.messages.nopost);
+				}else{
 					for (var i = data.raiddata.length - 1; i >= 0; i--) {
 						addpost(data.raiddata[i].username, data.raiddata[i].team, data.raiddata[i].raidtid, data.raiddata[i].raidkommentar, data.raiddata[i].raidimage, data.raiddata[i].kommer, data.raiddata[i].kommentar, data.raiddata[i].id, 'false', data.raiddata[i].exraid, data.raiddata[i].location, data.raiddata[i].tags);
 					};
 				};
-		    }
+			}
 		};
 		xmlhttp.open("GET", "raids.json", true);
+		xmlhttp.send();
+	};
+	function getareas(){
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var data = JSON.parse(this.responseText);
+				if(!data){}else if(data.length == 0){}else{
+					for (var i = data.length - 1; i >= 0; i--) {
+						//filterareas<label><input type="checkbox" name="lth" onclick="filterarea();">LTH</label>
+						var wrapper = document.getElementById('filterareas');
+							var label = document.createElement('label');
+								var input = document.createElement('input');
+									input.setAttribute('type', 'checkbox');
+									input.setAttribute('name', data[i].tagg);
+									input.setAttribute('onclick', 'filterarea();');
+								label.appendChild(input);
+								var inputtext = document.createTextNode(data[i].rubrik);
+								label.appendChild(inputtext);
+							wrapper.appendChild(label);
+					};
+					loadfilterarea();
+				};
+			};
+		};
+		xmlhttp.open("GET", "script/geofence.json", true);
 		xmlhttp.send();
 	};
 	function login(){

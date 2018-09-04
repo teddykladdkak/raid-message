@@ -85,7 +85,7 @@ function inside(point, vs) {
 };
 //https://codepen.io/jennerpalacios/full/mWWVeJ
 function checkifinside(longitude, latitude){
-	var geofence = JSON.parse(fs.readFileSync(__dirname + '/geofence.json', 'utf8'));
+	var geofence = JSON.parse(fs.readFileSync(__dirname + '/public/script/geofence.json', 'utf8'));
 	var tags = [];
 	for (var i = geofence.length - 1; i >= 0; i--) {
 		geofence[i]
@@ -159,7 +159,6 @@ app.post("/removesubscribe", (req, res) => {
 	console.log('Tar bort notifiering')
 	var data = req.body;
 	var todo = 'true';
-	console.log(data);
 	for (var i = subscribers.length - 1; i >= 0; i--) {
 		if(!data.subscription){}else{
 			if(subscribers[i].subscription.keys.p256dh == data.subscription.keys.p256dh){

@@ -74,3 +74,4 @@ node .
 * 4/9 ~~Only load posts from selected areas.~~
 * 4/9 ~~Stability in image API.~~
 * 4/9 ~~"Image to text" function will restart and change contrast until it finds a match or reach max desaturation.~~
+* 4/9 ~~All areas in Lund is now mapped to geofence. Loaded on clientside on start.~~
