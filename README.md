@@ -58,7 +58,7 @@ Change "/public/script/geofence.json" to your areas and coordinates, with folowi
 ```
 [
 	{
-		"tagg": "[id of tagg (only a-z) and small letters]",
+		"tagg": "[id of tagg, only "a-z" and small letters, no spaces]",
 		"rubrik": "[name of the tagg that your users will see]",
 		"coord": [[longitude,latitude], ..... ]
 	},{
