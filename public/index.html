@@ -664,7 +664,7 @@
 				redoimgtotext();
 			}else{
 				document.getElementById('debugcode').value = 'Number of retry: ' + numberofretry + ', Winner: "' + winnerarray.namn + '". Before selecting winner: ' + possible.length + ' st. Confidence over all: ' + debugconf + ', and winners confidence: ' + winnerconf + ' ["' + debugtext.join('", "') + '"]';
-				var numberofretry = 0;
+				numberofretry = 0;
 				enableonclick();
 				document.getElementById('raidimagepreview').removeAttribute('class');
 			};
@@ -678,7 +678,7 @@
 		console.log(config.imgdesaturate + numberofretry * 5);
 		console.log((config.imgdesaturate + numberofretry * 5) >= 255);
 		if((config.imgdesaturate + numberofretry * 5) >= 255 ){
-			var numberofretry = 0;
+			numberofretry = 0;
 			document.getElementById('debugcode').value = 'Diden´t find a match... :\'\(';
 			enableonclick();
 			document.getElementById('raidimagepreview').removeAttribute('class');
